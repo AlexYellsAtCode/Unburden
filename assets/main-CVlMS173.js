@@ -1,0 +1,1 @@
+import{a as e,i as t,n,r,t as i}from"./styles-B8Lgw3Nh.js";var a=e(t(),1),o=e(r(),1),s=n(),c=document.getElementById(`root`);if(!c)throw Error(`Root element was not found`);o.createRoot(c).render((0,s.jsx)(a.StrictMode,{children:(0,s.jsx)(i,{})}));
