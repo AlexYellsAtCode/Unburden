@@ -2,6 +2,8 @@
 
 Unburden is a Vite + React productivity prototype that combines tasks and calendar events in a mobile-style interface.
 
+Try it now at: https://alexyellsatcode.github.io/Unburden/
+
 The current implementation focuses on planning and workload awareness with:
 
 - Daily task and schedule views
