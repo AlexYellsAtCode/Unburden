@@ -222,3 +222,4 @@ Update `src/utils/deviceDetection.js`:
 - [ ] PWA installation on iOS (manual testing)
 - [ ] PWA installation on Android (manual testing)
 - [ ] Tablet viewport behavior (iPad, etc.)
+

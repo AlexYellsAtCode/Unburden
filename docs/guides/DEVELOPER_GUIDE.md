@@ -12,8 +12,8 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/AlexYellsAtCode/PlanAware.git
-cd PlanAware
+git clone https://github.com/AlexYellsAtCode/Unburden.git
+cd Unburden
 ```
 
 2. Install dependencies:
@@ -26,7 +26,7 @@ npm install
 npm run dev
 ```
 
-4. Open your browser to the URL shown in the terminal (typically `http://localhost:5173/PlanAware/`)
+4. Open your browser to the URL shown in the terminal (typically `http://localhost:5173/Unburden/`)
 
 ## Development Workflow
 
@@ -210,7 +210,7 @@ repeatType: 'monthly'
 
 #### Working with Dates
 
-PlanAware uses JavaScript `Date` objects internally and custom formatting for display:
+Unburden uses JavaScript `Date` objects internally and custom formatting for display:
 
 ```javascript
 const today = new Date()
@@ -279,7 +279,7 @@ npm run deploy
 This command:
 1. Runs `npm run build`
 2. Deploys the `dist/` folder to the `gh-pages` branch
-3. Makes the site live at https://alexyellsatcode.github.io/PlanAware/
+3. Makes the site live at https://alexyellsatcode.github.io/Unburden/
 
 ## Common Tasks
 
@@ -354,3 +354,4 @@ npm run dev
 - Review [ARCHITECTURE.md](./ARCHITECTURE.md) for system design details
 - Check [DATA_MODEL.md](./DATA_MODEL.md) for complete data specifications
 - See [FEATURES.md](./FEATURES.md) for feature descriptions and use cases
+

@@ -33,3 +33,4 @@ Includes common techniques for:
 - **Understanding features?** → Check [../features/FEATURES.md](../features/FEATURES.md)
 - **System design questions?** → Look in [../design/](../design/)
 - **Demo mode help?** → See [../demo/DEMO_MODE.md](../demo/DEMO_MODE.md)
+

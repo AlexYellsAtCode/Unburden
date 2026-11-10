@@ -1,10 +1,10 @@
 # Demo Mode Documentation
 
-This directory contains documentation and setup guides for running PlanAware in demo mode.
+This directory contains documentation and setup guides for running Unburden in demo mode.
 
 ## Files
 
-- **[DEMO_MODE.md](./DEMO_MODE.md)** - Complete guide to running PlanAware with sample seed data
+- **[DEMO_MODE.md](./DEMO_MODE.md)** - Complete guide to running Unburden with sample seed data
 
 ## Quick Start
 
@@ -37,3 +37,4 @@ This allows you to:
 - [docs/DEVELOPER_GUIDE.md](../DEVELOPER_GUIDE.md) - Development setup and workflow
 - [docs/QUICK_REFERENCE.md](../QUICK_REFERENCE.md) - Quick lookup of common commands
 - [src/seedData.js](../../src/seedData.js) - Source of seed data
+

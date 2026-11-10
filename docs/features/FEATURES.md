@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes PlanAware's features and their use cases, organized by view and interaction type.
+This document describes Unburden's features and their use cases, organized by view and interaction type.
 
 ## Core Features
 
@@ -323,7 +323,7 @@ This document describes PlanAware's features and their use cases, organized by v
 **Goal**: Manage classes, assignments, and personal time
 
 **Steps**:
-1. Open PlanAware (Home view shows today)
+1. Open Unburden (Home view shows today)
 2. Review today's tasks and events
 3. Switch to Weekly view to see upcoming assignments
 4. Check Monthly view to identify heavy workload days
@@ -371,3 +371,4 @@ This document describes PlanAware's features and their use cases, organized by v
 - **Mobile app** with offline sync
 - **Calendar integration** (Google Calendar, Outlook)
 - **Pomodoro timer** for time blocking
+

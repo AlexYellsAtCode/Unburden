@@ -1,8 +1,8 @@
-# PlanAware Architecture
+# Unburden Architecture
 
 ## Overview
 
-PlanAware is a Vite + React productivity application designed to help users manage tasks and calendar events in an integrated, mobile-style interface. The application focuses on workload awareness through daily, weekly, and monthly planning views.
+Unburden is a Vite + React productivity application designed to help users manage tasks and calendar events in an integrated, mobile-style interface. The application focuses on workload awareness through daily, weekly, and monthly planning views.
 
 ## Technology Stack
 
@@ -16,7 +16,7 @@ PlanAware is a Vite + React productivity application designed to help users mana
 ## Project Structure
 
 ```
-PlanAware/
+Unburden/
 ├── src/
 │   ├── App.jsx          # Main component with state management & views
 │   ├── main.jsx         # React DOM entry point
@@ -31,7 +31,7 @@ PlanAware/
 
 ### 1. **State Management**
 
-PlanAware uses React hooks for state management:
+Unburden uses React hooks for state management:
 
 - **useState**: Manages tasks, events, UI state (current view, selected date, edit mode)
 - **useEffect**: Handles side effects (fetching data, swipe listeners)
@@ -201,3 +201,4 @@ Single `styles.css` file organized by:
 - Implement proper state management (Redux, Zustand, etc.)
 - Add data persistence (localStorage, IndexedDB, server database)
 - Implement authentication & user profiles
+

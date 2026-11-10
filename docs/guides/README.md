@@ -9,7 +9,7 @@ Getting started and development workflow documentation.
 
 ## 🎯 For Different Audiences
 
-### New to PlanAware?
+### New to Unburden?
 Start with [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for a 5-minute overview.
 
 ### Setting up development environment?
@@ -25,3 +25,4 @@ Check [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - it has all the npm scripts an
 - **Exploring features?** → Read [../features/FEATURES.md](../features/FEATURES.md)
 - **Running in demo mode?** → See [../demo/DEMO_MODE.md](../demo/DEMO_MODE.md)
 - **Troubleshooting issues?** → Look in [../reference/TROUBLESHOOTING.md](../reference/TROUBLESHOOTING.md)
+

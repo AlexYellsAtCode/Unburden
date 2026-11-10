@@ -246,3 +246,4 @@ function isWeb() { return !isIOS() && !isAndroid() }
 3. **Test on actual devices**: iOS/Android devices and tablets
 4. **Add native bridge**: React Native / Cordova integration
 5. **Platform-specific polish**: iOS safe areas, Android navigation bars
+

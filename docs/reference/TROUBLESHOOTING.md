@@ -177,14 +177,14 @@
 **Symptoms**: `npm run preview` shows incorrect styling or layout
 
 **Potential Causes**:
-1. **Base path mismatch**: Vite is configured with `base: '/PlanAware/'`; ensure this matches your deployment
+1. **Base path mismatch**: Vite is configured with `base: '/Unburden/'`; ensure this matches your deployment
 2. **Asset paths**: Check if images/fonts reference correct paths
 3. **CSS minification**: Sometimes minification causes issues; test with unminified build
 4. **Source maps**: Production doesn't include source maps (for security); debug with dev build
 
 #### Deployment to GitHub Pages Fails
 
-**Symptoms**: `npm run deploy` errors or site doesn't appear at https://alexyellsatcode.github.io/PlanAware/
+**Symptoms**: `npm run deploy` errors or site doesn't appear at https://alexyellsatcode.github.io/Unburden/
 
 **Potential Causes**:
 1. **gh-pages branch doesn't exist**: Create it:
@@ -363,4 +363,5 @@ When reporting a bug, include:
 - [React Documentation](https://react.dev)
 - [Vite Documentation](https://vitejs.dev)
 - [MDN Web Docs](https://developer.mozilla.org)
-- [GitHub Issues](https://github.com/AlexYellsAtCode/PlanAware/issues)
+- [GitHub Issues](https://github.com/AlexYellsAtCode/Unburden/issues)
+

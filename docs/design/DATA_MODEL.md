@@ -2,7 +2,7 @@
 
 ## Overview
 
-PlanAware manages two primary entities: **Tasks** and **Events**. This document specifies their structure, relationships, and validation rules.
+Unburden manages two primary entities: **Tasks** and **Events**. This document specifies their structure, relationships, and validation rules.
 
 ## Task Data Model
 
@@ -313,3 +313,4 @@ All fake backend methods return cloned task/event objects or arrays.
 - **social**: Friends, family, events
 
 Categories are flexible and user-defined; the above are suggestions from seed data.
+

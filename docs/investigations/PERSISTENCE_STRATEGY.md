@@ -1,10 +1,10 @@
-# PlanAware Persistence Strategy & Offline Options
+# Unburden Persistence Strategy & Offline Options
 
 ## Current State: In-Memory Only
 
 ### How Persistence Works Today
 
-PlanAware currently has **NO persistent storage**. All data is stored in-memory using React state:
+Unburden currently has **NO persistent storage**. All data is stored in-memory using React state:
 
 ```javascript
 // App.jsx
@@ -94,7 +94,7 @@ Personal devices, single-user setup, quick MVP, mobile PWAs
 
 #### Implementation:
 ```javascript
-const DB_NAME = 'PlanAwareDB'
+const DB_NAME = 'UnburdenDB'
 const DB_VERSION = 1
 
 function getDB() {
@@ -402,4 +402,5 @@ Everything stays on the user's device. Perfect for your offline-first requiremen
 - [DATA_MODEL.md](./DATA_MODEL.md) - Task/Event structure
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Current app design
 - [ENV_CONFIGURATION.md](../guides/ENV_CONFIGURATION.md) - Environment setup
+
 

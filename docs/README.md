@@ -1,6 +1,6 @@
 # Documentation Index
 
-Welcome to PlanAware Documentation! This folder contains comprehensive guides organized by topic to help you understand, develop, and maintain the project.
+Welcome to Unburden Documentation! This folder contains comprehensive guides organized by topic to help you understand, develop, and maintain the project.
 
 ## 📁 Documentation Directories
 
@@ -65,7 +65,7 @@ Solutions for problems and debugging guidance.
 
 ## 📊 Quick Project Overview
 
-**PlanAware** is a productivity app that combines tasks and calendar events in an integrated interface.
+**Unburden** is a productivity app that combines tasks and calendar events in an integrated interface.
 
 ### Key Facts:
 - **Framework**: React 18 with Vite
@@ -90,12 +90,12 @@ Hosting: GitHub Pages
 ```bash
 npm install
 npm run dev
-# Open http://localhost:5173/PlanAware/
+# Open http://localhost:5173/Unburden/
 ```
 
 ## 📊 Quick Project Overview
 
-**PlanAware** is a productivity app that combines tasks and calendar events in an integrated interface.
+**Unburden** is a productivity app that combines tasks and calendar events in an integrated interface.
 
 ### Key Facts:
 - **Framework**: React 18 with Vite
@@ -120,7 +120,7 @@ Hosting: GitHub Pages
 ```bash
 npm install
 npm run dev
-# Open http://localhost:5173/PlanAware/
+# Open http://localhost:5173/Unburden/
 ```
 
 ### Build for Production
@@ -154,8 +154,8 @@ When making significant changes to the project:
 
 ## 📚 Additional Resources
 
-- **Project Repository**: https://github.com/AlexYellsAtCode/PlanAware
-- **Live Demo**: https://alexyellsatcode.github.io/PlanAware/
+- **Project Repository**: https://github.com/AlexYellsAtCode/Unburden
+- **Live Demo**: https://alexyellsatcode.github.io/Unburden/
 - **React Docs**: https://react.dev
 - **Vite Docs**: https://vitejs.dev
 
@@ -174,3 +174,4 @@ If you can't find an answer:
 **Last Updated**: November 5, 2026  
 **Project Version**: v0.1 (MVP)  
 **Status**: Active Development
+

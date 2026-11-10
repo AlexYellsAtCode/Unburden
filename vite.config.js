@@ -8,8 +8,8 @@ const demoEntry = () => ({
   configureServer(server) {
     server.middlewares.use((req, _res, next) => {
       const [path, query = ''] = req.url.split('?')
-      if (path === '/' || path === '/PlanAware/' || path === '/PlanAware' || path === '/index.html') {
-        req.url = '/PlanAware/index-demo.html' + (query ? `?${query}` : '')
+      if (path === '/' || path === '/Unburden/' || path === '/Unburden' || path === '/index.html') {
+        req.url = '/Unburden/index-demo.html' + (query ? `?${query}` : '')
       }
       next()
     })
@@ -17,7 +17,7 @@ const demoEntry = () => ({
 })
 
 export default defineConfig(({ mode }) => ({
-  base: '/PlanAware/',
+  base: '/Unburden/',
   plugins: [react(), ...(mode === 'demo' ? [demoEntry()] : [])],
   build: {
     rollupOptions: {

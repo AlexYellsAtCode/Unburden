@@ -33,3 +33,4 @@ Both documents cover:
 - **Understanding features?** → Check [../features/FEATURES.md](../features/FEATURES.md)
 - **Troubleshooting?** → Look in [../reference/TROUBLESHOOTING.md](../reference/TROUBLESHOOTING.md)
 - **Demo mode?** → See [../demo/DEMO_MODE.md](../demo/DEMO_MODE.md)
+

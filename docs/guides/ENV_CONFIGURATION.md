@@ -1,6 +1,6 @@
 # Environment Configuration Guide
 
-This guide explains the environment variables and configuration files used in PlanAware.
+This guide explains the environment variables and configuration files used in Unburden.
 
 ## 📁 Environment Files
 
@@ -11,7 +11,7 @@ Configuration for demo mode with sample seed data.
 
 ```env
 # Demo mode configuration
-# This file documents the demo mode setup for PlanAware
+# This file documents the demo mode setup for Unburden
 
 # To run the application with seed data (demo mode):
 # npm run demo
@@ -211,3 +211,4 @@ VITE_USE_SEED_DATA=false npm run dev
 
 **Last Updated**: November 5, 2026  
 **Related**: [TESTING_GUIDE.html](./TESTING_GUIDE.html), [IMPLEMENTATION.md](./IMPLEMENTATION.md)
+

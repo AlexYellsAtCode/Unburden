@@ -4,7 +4,7 @@ Feature descriptions, use cases, and user interactions.
 
 ## 📚 Contents
 
-- **[FEATURES.md](./FEATURES.md)** - Detailed descriptions of all PlanAware features
+- **[FEATURES.md](./FEATURES.md)** - Detailed descriptions of all Unburden features
 
 ## 🎯 What You'll Find
 
@@ -19,7 +19,7 @@ Comprehensive documentation of:
 
 ## 💡 Use Cases
 
-Learn how PlanAware helps with:
+Learn how Unburden helps with:
 - Weekly planning and prioritization
 - Balancing multiple projects and courses
 - Tracking estimated time for tasks
@@ -33,3 +33,4 @@ Learn how PlanAware helps with:
 - **Setting up development?** → Check [../guides/](../guides/)
 - **Need help?** → Look in [../reference/TROUBLESHOOTING.md](../reference/TROUBLESHOOTING.md)
 - **Running with demo data?** → See [../demo/DEMO_MODE.md](../demo/DEMO_MODE.md)
+

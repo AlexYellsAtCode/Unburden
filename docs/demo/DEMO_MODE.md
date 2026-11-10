@@ -1,6 +1,6 @@
 # Demo Mode Setup
 
-PlanAware supports two deployment modes:
+Unburden supports two deployment modes:
 
 1. **Main App** - Lightweight version without phone simulation wrapper
 2. **Demo App** - Includes phone frame mockup for desktop viewing with sample data
@@ -49,7 +49,7 @@ Creates an optimized production build of the demo version only with phone simula
 
 ### Entry Points
 
-PlanAware uses a dual entry-point architecture:
+Unburden uses a dual entry-point architecture:
 
 **Main App** (`src/main.jsx`):
 - Renders the App component directly
@@ -257,4 +257,5 @@ The phone frame should automatically hide on actual mobile devices due to device
 - [DEVELOPER_GUIDE.md](../guides/DEVELOPER_GUIDE.md) - Development setup and workflow
 - [QUICK_REFERENCE.md](../guides/QUICK_REFERENCE.md) - Quick command reference
 - [src/seedData.js](../../src/seedData.js) - Seed data source file
+
 

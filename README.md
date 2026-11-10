@@ -1,6 +1,6 @@
-# PlanAware
+# Unburden
 
-PlanAware is a Vite + React productivity prototype that combines tasks and calendar events in a mobile-style interface.
+Unburden is a Vite + React productivity prototype that combines tasks and calendar events in a mobile-style interface.
 
 The current implementation focuses on planning and workload awareness with:
 
@@ -82,7 +82,7 @@ The current implementation focuses on planning and workload awareness with:
 
 ### Demo Mode
 
-PlanAware ships two entry points:
+Unburden ships two entry points:
 
 - **Default** (`npm run dev`): Serves `index.html` / `src/main.jsx`. Starts with an empty task and event list and no phone frame.
 - **Demo** (`npm run dev:demo`): Serves `index-demo.html` / `src/main-demo.jsx` at the root URL. Wraps the app in a phone frame with a status bar and loads sample seed data (`VITE_USE_SEED_DATA=true`).
@@ -129,7 +129,7 @@ This will:
 
 Live site URL:
 
-- https://alexyellsatcode.github.io/PlanAware/
+- https://alexyellsatcode.github.io/Unburden/
 
 ## Project Structure
 

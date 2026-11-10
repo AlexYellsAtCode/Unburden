@@ -9,7 +9,7 @@ npm install
 # 2. Start dev server
 npm run dev
 
-# 3. Open browser to the URL shown (usually http://localhost:5173/PlanAware/)
+# 3. Open browser to the URL shown (usually http://localhost:5173/Unburden/)
 ```
 
 ## Common Commands
@@ -218,8 +218,8 @@ npm --version    # Should be 9+
 
 ## Links
 
-- **Repository**: https://github.com/AlexYellsAtCode/PlanAware
-- **Live Site**: https://alexyellsatcode.github.io/PlanAware/
+- **Repository**: https://github.com/AlexYellsAtCode/Unburden
+- **Live Site**: https://alexyellsatcode.github.io/Unburden/
 - **Docs**: See files in `docs/` folder
   - [ARCHITECTURE.md](./ARCHITECTURE.md) — System design and architecture
   - [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) — How to make changes
@@ -277,3 +277,4 @@ npm --version    # Should be 9+
 - [ ] Advanced filtering and sorting
 - [ ] Time tracking and analytics
 - [ ] Collaboration and sharing
+
