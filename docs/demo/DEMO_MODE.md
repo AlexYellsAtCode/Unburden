@@ -51,13 +51,13 @@ Creates an optimized production build of the demo version only with phone simula
 
 Unburden uses a dual entry-point architecture:
 
-**Main App** (`src/main.jsx`):
+**Main App** (`src/main.tsx`):
 - Renders the App component directly
 - No phone simulation wrapper
 - Clean, lightweight bundle
 - Best for production and mobile testing
 
-**Demo App** (`src/main-demo.jsx`):
+**Demo App** (`src/main-demo.tsx`):
 - Wraps App with `PhoneFrameWrapper` component
 - Includes device detection for responsive behavior
 - Manages phone status bar time display
@@ -68,21 +68,21 @@ Unburden uses a dual entry-point architecture:
 
 The seed data loading is controlled by the `VITE_USE_SEED_DATA` environment variable:
 
-- When set to `'true'`: Seed tasks and events are loaded from `src/seedData.js`
+- When set to `'true'`: Seed tasks and events are loaded from `src/seedData.ts`
 - When set to `'false'` or undefined: The application starts with empty data
 
 This approach keeps the application logic clean while providing an easy way to demonstrate features or populate the app with sample data for testing.
 
 ### Technical Implementation
 
-**In src/App.jsx:**
+**In src/App.tsx:**
 ```javascript
 const shouldUseSeedData = import.meta.env.VITE_USE_SEED_DATA === 'true'
 const seedTasks = shouldUseSeedData ? importedSeedTasks : []
 const seedEvents = shouldUseSeedData ? importedSeedEvents : []
 ```
 
-**In src/main-demo.jsx** (phone simulation wrapper):
+**In src/main-demo.tsx** (phone simulation wrapper):
 ```javascript
 function AppWithPhoneFrame() {
   const [currentTime, setCurrentTime] = React.useState(() => new Date())
@@ -169,13 +169,13 @@ The demo mode includes 10 sample tasks and 2 recurring events:
 
 ## Files Related to Demo Mode
 
-- **src/seedData.js** - Contains seed tasks and events data
-- **src/App.jsx** - Conditional import logic based on environment variable (no phone UI code)
-- **src/main.jsx** - Main entry point (renders App directly)
-- **src/main-demo.jsx** - Demo entry point (wraps App with phone frame)
-- **src/components/PhoneFrameWrapper.jsx** - Phone mockup component (demo only)
-- **src/components/StatusBar.jsx** - Phone status bar (demo only)
-- **src/utils/deviceDetection.js** - Mobile detection (demo only)
+- **src/seedData.ts** - Contains seed tasks and events data
+- **src/App.tsx** - Conditional import logic based on environment variable (no phone UI code)
+- **src/main.tsx** - Main entry point (renders App directly)
+- **src/main-demo.tsx** - Demo entry point (wraps App with phone frame)
+- **src/components/PhoneFrameWrapper.tsx** - Phone mockup component (demo only)
+- **src/components/StatusBar.tsx** - Phone status bar (demo only)
+- **src/utils/deviceDetection.ts** - Mobile detection (demo only)
 - **index.html** - Main app entry HTML
 - **index-demo.html** - Demo app entry HTML
 - **vite.config.js** - Multi-entry-point build configuration
@@ -204,9 +204,9 @@ This means `npm run dev:demo` and `npm run build:demo` work identically across a
 
 1. Verify you're running `npm run dev:demo` (not `npm run dev`)
 2. Check that all required files exist:
-   - `src/main-demo.jsx`
-   - `src/components/PhoneFrameWrapper.jsx`
-   - `src/components/StatusBar.jsx`
+   - `src/main-demo.tsx`
+   - `src/components/PhoneFrameWrapper.tsx`
+   - `src/components/StatusBar.tsx`
    - `index-demo.html`
 3. Check browser console for any errors
 
@@ -247,7 +247,7 @@ This means `npm run dev:demo` and `npm run build:demo` work identically across a
 
 The phone frame should automatically hide on actual mobile devices due to device detection. If you see the frame on a mobile device:
 
-1. Check `src/utils/deviceDetection.js` to ensure it's detecting your device correctly
+1. Check `src/utils/deviceDetection.ts` to ensure it's detecting your device correctly
 2. Check browser console for any errors related to device detection
 3. Test on a different device or browser to verify
 
@@ -256,6 +256,6 @@ The phone frame should automatically hide on actual mobile devices due to device
 - [README.md](../../README.md) - Main project documentation
 - [DEVELOPER_GUIDE.md](../guides/DEVELOPER_GUIDE.md) - Development setup and workflow
 - [QUICK_REFERENCE.md](../guides/QUICK_REFERENCE.md) - Quick command reference
-- [src/seedData.js](../../src/seedData.js) - Seed data source file
+- [src/seedData.ts](../../src/seedData.ts) - Seed data source file
 
 

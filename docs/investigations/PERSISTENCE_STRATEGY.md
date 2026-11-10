@@ -7,7 +7,7 @@
 Unburden currently has **NO persistent storage**. All data is stored in-memory using React state:
 
 ```javascript
-// App.jsx
+// App.tsx
 const [tasks, setTasks] = useState([])
 const [events, setEvents] = useState([])
 

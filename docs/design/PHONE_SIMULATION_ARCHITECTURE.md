@@ -12,7 +12,7 @@ The phone UI chrome (status bar with time, WiFi/signal bars, battery indicator) 
 
 ### New Files Created
 
-#### 1. `src/utils/deviceDetection.js`
+#### 1. `src/utils/deviceDetection.ts`
 Utility functions to detect the running environment:
 - `isMobileEnvironment()`: Detects if running on mobile/PWA/native app
   - Checks for PWA standalone mode
@@ -21,13 +21,13 @@ Utility functions to detect the running environment:
   - Respects `VITE_MOBILE_MODE` environment variable for testing
 - `isMobileViewport()`: Detects mobile-sized viewport
 
-#### 2. `src/components/StatusBar.jsx`
+#### 2. `src/components/StatusBar.tsx`
 Extracted status bar component showing:
 - Current time
 - Cell signal bars (4 bars)
 - Battery indicator (100%)
 
-#### 3. `src/components/PhoneFrameWrapper.jsx`
+#### 3. `src/components/PhoneFrameWrapper.tsx`
 Conditional wrapper component that:
 - **On Desktop**: Renders phone mockup frame with StatusBar
   - `<main className="page-shell">` (centered page)
@@ -41,7 +41,7 @@ Conditional wrapper component that:
 
 ### Modified Files
 
-#### 1. `src/App.jsx`
+#### 1. `src/App.tsx`
 - Added imports for device detection and wrapper components
 - Added `isMobileMode` state that detects environment on mount
 - Added useEffect to re-detect on window resize (for responsive design)
@@ -177,7 +177,7 @@ VITE_MOBILE_MODE=true npm run dev
 4. **Component Isolation**: PhoneFrameWrapper
    - Single responsibility (conditional rendering)
    - Easy to understand and modify
-   - Keeps App.jsx logic clean
+   - Keeps App.tsx logic clean
 
 ## Migration Path for Future Work
 
@@ -188,7 +188,7 @@ VITE_MOBILE_MODE=true npm run dev
 4. Component automatically renders mobile layout everywhere
 
 ### If You Want More Sophisticated Detection
-Update `src/utils/deviceDetection.js`:
+Update `src/utils/deviceDetection.ts`:
 ```javascript
 // Add platform-specific checks
 // Check for native bridge (React Native, Cordova, etc.)

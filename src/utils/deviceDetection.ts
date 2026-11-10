@@ -2,7 +2,7 @@
  * Detect if the app is running on a mobile device or as a native app
  * Returns true for mobile/PWA environments, false for desktop browsers
  */
-export function isMobileEnvironment() {
+export function isMobileEnvironment(): boolean {
   // Check if running as a PWA (installed app) or with viewport meta tag
   const isStandalone = window.navigator.standalone === true || 
                        window.matchMedia('(display-mode: standalone)').matches ||
@@ -31,6 +31,6 @@ export function isMobileEnvironment() {
 /**
  * Detect if viewport is mobile-sized (used for responsive breakpoints)
  */
-export function isMobileViewport() {
+export function isMobileViewport(): boolean {
   return window.innerWidth < 768
 }
