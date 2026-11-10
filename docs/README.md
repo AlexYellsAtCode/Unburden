@@ -166,7 +166,7 @@ If you can't find an answer:
 1. Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for known issues
 2. Search the documentation files
 3. Check browser console for errors (F12)
-4. Review code comments in `src/App.jsx`
+4. Review code comments in `src/App.tsx`
 5. Open an issue on GitHub
 
 ---

@@ -48,10 +48,11 @@ The current implementation focuses on planning and workload awareness with:
 ## Tech Stack
 
 - React 18
+- TypeScript with strict type checking
 - Vite 8
 - Plain CSS (single stylesheet)
 - No external state manager
-- No real backend (simulated in `src/App.jsx`)
+- No real backend (simulated in `src/App.tsx`)
 
 ## Getting Started
 
@@ -86,8 +87,8 @@ The current implementation focuses on planning and workload awareness with:
 
 Unburden ships two entry points:
 
-- **Default** (`npm run dev`): Serves `index.html` / `src/main.jsx`. Starts with an empty task and event list and no phone frame.
-- **Demo** (`npm run dev:demo`): Serves `index-demo.html` / `src/main-demo.jsx` at the root URL. Wraps the app in a phone frame with a status bar and loads sample seed data (`VITE_USE_SEED_DATA=true`).
+- **Default** (`npm run dev`): Serves `index.html` / `src/main.tsx`. Starts with an empty task and event list and no phone frame.
+- **Demo** (`npm run dev:demo`): Serves `index-demo.html` / `src/main-demo.tsx` at the root URL. Wraps the app in a phone frame with a status bar and loads sample seed data (`VITE_USE_SEED_DATA=true`).
 
 The phone frame is hidden automatically on mobile devices, installed PWAs, and viewports narrower than 768px. Override with `VITE_MOBILE_MODE=true|false` (see `.env.test`).
 
@@ -99,6 +100,7 @@ See [docs/demo/DEMO_MODE.md](./docs/demo/DEMO_MODE.md) for more details about us
 - `npm run dev:demo` - Start dev server with phone frame and sample seed data
 - `npm run build` - Build production assets (main and demo entry pages, empty data)
 - `npm run build:demo` - Build production assets with sample seed data baked in
+- `npm run typecheck` - Run strict TypeScript checks without emitting files
 - `npm run preview` - Preview production build locally
 - `npm run deploy` - Build and publish `dist` to the `gh-pages` branch
 
@@ -141,21 +143,23 @@ Live site URL:
 |- index-demo.html       # Demo entry (phone frame)
 |- package.json
 |- README.md
+|- tsconfig.json
 |- vite.config.js
 |- docs/                 # Design, feature, guide, and demo documentation
 `- src/
-	|- App.jsx
-	|- main.jsx
-	|- main-demo.jsx
-	|- seedData.js
+	|- App.tsx
+	|- main.tsx
+	|- main-demo.tsx
+	|- seedData.ts
 	|- styles.css
+	|- types.ts             # Shared task, event, recurrence, and form types
 	|- components/
-	|  |- PhoneFrameWrapper.jsx
-	|  `- StatusBar.jsx
+	|  |- PhoneFrameWrapper.tsx
+	|  `- StatusBar.tsx
 	|- testing/
-	|  `- deviceDetectionTest.js
+	|  `- deviceDetectionTest.ts
 	`- utils/
-		`- deviceDetection.js
+		`- deviceDetection.ts
 ```
 
 More documentation is in [docs/](./docs/README.md).

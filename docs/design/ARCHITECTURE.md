@@ -18,8 +18,8 @@ Unburden is a Vite + React productivity application designed to help users manag
 ```
 Unburden/
 ├── src/
-│   ├── App.jsx          # Main component with state management & views
-│   ├── main.jsx         # React DOM entry point
+│   ├── App.tsx          # Main component with state management & views
+│   ├── main.tsx         # React DOM entry point
 │   └── styles.css       # All application styles
 ├── index.html           # HTML template
 ├── package.json         # Dependencies & scripts

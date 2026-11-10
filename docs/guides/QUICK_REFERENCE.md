@@ -31,19 +31,19 @@ npm run deploy     # Build and deploy to GitHub Pages
 
 | File | Purpose |
 |------|---------|
-| `src/App.jsx` | Main component (state, views, fake backend); no phone UI code |
-| `src/main.jsx` | Main entry point (renders App directly) |
-| `src/main-demo.jsx` | Demo entry point (wraps App with phone frame) |
-| `src/components/PhoneFrameWrapper.jsx` | Phone mockup UI (demo only) |
-| `src/components/StatusBar.jsx` | Phone status bar (demo only) |
-| `src/utils/deviceDetection.js` | Mobile detection (demo only) |
+| `src/App.tsx` | Main component (state, views, fake backend); no phone UI code |
+| `src/main.tsx` | Main entry point (renders App directly) |
+| `src/main-demo.tsx` | Demo entry point (wraps App with phone frame) |
+| `src/components/PhoneFrameWrapper.tsx` | Phone mockup UI (demo only) |
+| `src/components/StatusBar.tsx` | Phone status bar (demo only) |
+| `src/utils/deviceDetection.ts` | Mobile detection (demo only) |
 | `src/styles.css` | All styling |
 | `index.html` | Main app HTML entry |
 | `index-demo.html` | Demo app HTML entry |
 | `vite.config.js` | Multi-entry-point build configuration |
 | `package.json` | Dependencies and scripts |
 
-## State Variables in App.jsx
+## State Variables in App.tsx
 
 ```javascript
 const [tasks, setTasks] = useState([])          // List of all tasks
@@ -214,7 +214,7 @@ npm --version    # Should be 9+
 - ✗ No mobile app (web-based only)
 - ✗ No timezone support (uses browser timezone)
 - ✗ No notifications or reminders
-- ✗ All components in single App.jsx file
+- ✗ All components in single App.tsx file
 
 ## Links
 
@@ -257,7 +257,7 @@ npm --version    # Should be 9+
 1. **Use `clone()`** to avoid mutations: `clone(task)` instead of `{ ...task }`
 2. **Use `useMemo`** for expensive calculations to avoid re-renders
 3. **Use `useRef`** for touch event tracking
-4. **Keep state in App.jsx** for simplicity (no context API yet)
+4. **Keep state in App.tsx** for simplicity (no context API yet)
 5. **Comment non-obvious code**, but keep comments minimal
 6. **Test in mobile view** using DevTools device emulation
 7. **Hard refresh** after code changes: `Ctrl+Shift+R`

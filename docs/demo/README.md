@@ -36,5 +36,5 @@ This allows you to:
 
 - [docs/DEVELOPER_GUIDE.md](../DEVELOPER_GUIDE.md) - Development setup and workflow
 - [docs/QUICK_REFERENCE.md](../QUICK_REFERENCE.md) - Quick lookup of common commands
-- [src/seedData.js](../../src/seedData.js) - Source of seed data
+- [src/seedData.ts](../../src/seedData.ts) - Source of seed data
 
