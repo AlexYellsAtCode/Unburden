@@ -1,6 +1,4 @@
-import type { CalendarEvent, Task } from './types'
-
-function formatWeekDue(dayOffset: number, hour24: number, minute: number) {
+function formatWeekDue(dayOffset, hour24, minute) {
   const today = new Date() 
   const weekStart = new Date(today)
   weekStart.setDate(today.getDate() - today.getDay())
@@ -19,7 +17,7 @@ function formatWeekDue(dayOffset: number, hour24: number, minute: number) {
   return `${dateLabel} ${String(hour12).padStart(2, '0')}:${String(minute).padStart(2, '0')} ${period}`
 }
 
-export const seedTasks: Task[] = [
+export const seedTasks = [
   { id: 1, title: 'Review Week Plan', notes: 'Prioritize assignments for the week', completed: false, priority: 'Low', due: formatWeekDue(0, 10, 0), estimatedMinutes: 40, difficulty: 1, category: 'learning' },
   { id: 2, title: 'CS 407 Reading Quiz Prep', notes: 'Read chapter and practice key terms', completed: false, priority: 'Medium', due: formatWeekDue(1, 19, 30), estimatedMinutes: 90, difficulty: 2, category: 'learning' },
   { id: 3, title: 'Data Structures Homework', notes: 'Complete graph traversal problems', completed: false, priority: 'High', due: formatWeekDue(2, 17, 0), estimatedMinutes: 180, difficulty: 5, category: 'work' },
@@ -32,7 +30,7 @@ export const seedTasks: Task[] = [
   { id: 10, title: 'Laundry + Room Reset', notes: 'Prepare for next week', completed: false, priority: 'Medium', due: formatWeekDue(6, 15, 0), estimatedMinutes: 70, difficulty: 2, category: 'personal' },
 ]
 
-export const seedEvents: CalendarEvent[] = [
+export const seedEvents = [
   {
     id: 101,
     title: 'CS 466 Lecture',

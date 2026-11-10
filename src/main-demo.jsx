@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { PhoneFrameWrapper } from './components/PhoneFrameWrapper'
-import { isMobileEnvironment } from './utils/deviceDetection'
+import { PhoneFrameWrapper } from './components/PhoneFrameWrapper.jsx'
+import { isMobileEnvironment } from './utils/deviceDetection.js'
 import './styles.css'
 
 function AppWithPhoneFrame() {
@@ -21,10 +21,7 @@ function AppWithPhoneFrame() {
   )
 }
 
-const rootElement = document.getElementById('root')
-if (!rootElement) throw new Error('Root element was not found')
-
-ReactDOM.createRoot(rootElement).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AppWithPhoneFrame />
   </React.StrictMode>,

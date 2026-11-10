@@ -300,7 +300,7 @@
 **Debugging Steps**:
 1. Open task in edit mode
 2. Verify `repeatType` and related fields are populated
-3. Check App.tsx for recurrence expansion logic
+3. Check App.jsx for recurrence expansion logic
 4. Add logging:
    ```javascript
    console.log('Recurring instances:', tasks.filter(t => t.repeatType))

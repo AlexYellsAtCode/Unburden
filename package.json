@@ -8,7 +8,6 @@
     "dev:demo": "cross-env VITE_USE_SEED_DATA=true vite --config vite.config.js --mode demo",
     "build": "vite build",
     "build:demo": "cross-env VITE_USE_SEED_DATA=true vite build --config vite.config.js --mode demo",
-    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist --no-history --nojekyll --remove \"*\""
@@ -18,12 +17,10 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.0.1",
     "cross-env": "^7.0.3",
     "gh-pages": "^6.3.0",
-    "typescript": "^7.0.2",
     "vite": "^8.0.5"
   }
 }
+

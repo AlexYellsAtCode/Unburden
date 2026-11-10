@@ -61,7 +61,7 @@ Controls whether the app loads sample tasks and events.
 
 | Value | Behavior |
 |-------|----------|
-| `true` | Load demo tasks and events from seedData.ts |
+| `true` | Load demo tasks and events from seedData.js |
 | `false` (default) | Start with empty task/event lists |
 
 **Example:**
@@ -140,7 +140,7 @@ npm run preview  # preview production build
 Environment variables are read by Vite during build time:
 
 ```javascript
-// In src/App.tsx or other files
+// In src/App.jsx or other files
 const shouldUseSeedData = import.meta.env.VITE_USE_SEED_DATA === 'true'
 const isMobileMode = import.meta.env.VITE_MOBILE_MODE === 'true'
 ```
@@ -185,8 +185,8 @@ VITE_USE_SEED_DATA=false npm run dev
 ## 📚 Further Reading
 
 - [Vite Environment Variables](https://vitejs.dev/guide/env-and-mode.html)
-- [App.tsx](../src/App.tsx) - See where variables are used
-- [Device Detection](../src/utils/deviceDetection.ts) - Mobile mode detection logic
+- [App.jsx](../src/App.jsx) - See where variables are used
+- [Device Detection](../src/utils/deviceDetection.js) - Mobile mode detection logic
 - [TESTING_GUIDE.html](./TESTING_GUIDE.html) - Interactive testing guide
 
 ## ❓ Troubleshooting
