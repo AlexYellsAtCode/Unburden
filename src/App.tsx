@@ -1,84 +1,129 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
-import { seedTasks as importedSeedTasks, seedEvents as importedSeedEvents } from './seedData.js'
+import type { FormEvent, TouchEvent } from 'react'
+import { seedTasks as importedSeedTasks, seedEvents as importedSeedEvents } from './seedData'
+import type {
+  CalendarEvent,
+  Category,
+  DayPeriod,
+  EventForm,
+  EventInput,
+  EventUpdates,
+  RepeatOptions,
+  RepeatType,
+  Screen,
+  Task,
+  TaskForm,
+  TaskInput,
+  TaskSortOption,
+  TaskUpdates,
+} from './types'
 
-function shortPriority(priority) {
+function shortPriority(priority: string) {
   if (String(priority).toLowerCase() === 'medium') return 'Med'
   return priority
 }
 
-// Use seed data if VITE_USE_SEED_DATA is set, otherwise start with empty data
-const shouldUseSeedData = import.meta.env.VITE_USE_SEED_DATA === 'true'
-const seedTasks = shouldUseSeedData ? importedSeedTasks : []
-const seedEvents = shouldUseSeedData ? importedSeedEvents : []
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value))
+function parsePriority(value: string): TaskForm['priority'] {
+  if (value === 'High' || value === 'Low') return value
+  return 'Medium'
 }
 
-let fakeTasks = clone(seedTasks)
-let fakeEvents = clone(seedEvents)
+function parseRepeatType(value: string): RepeatType {
+  switch (value) {
+    case 'daily':
+    case 'weekly':
+    case 'weekly-x':
+    case 'monthly':
+    case 'every-n-days':
+      return value
+    default:
+      return 'none'
+  }
+}
+
+function parseDayPeriod(value: string): DayPeriod {
+  return value === 'PM' ? 'PM' : 'AM'
+}
+
+// Use seed data if VITE_USE_SEED_DATA is set, otherwise start with empty data
+const shouldUseSeedData = import.meta.env.VITE_USE_SEED_DATA === 'true'
+const seedTasks: Task[] = shouldUseSeedData ? importedSeedTasks : []
+const seedEvents: CalendarEvent[] = shouldUseSeedData ? importedSeedEvents : []
+
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T
+}
+
+let fakeTasks: Task[] = clone(seedTasks)
+let fakeEvents: CalendarEvent[] = clone(seedEvents)
 
 const fakeBackend = {
-  async listTasks() {
+  async listTasks(): Promise<Task[]> {
     await wait(650)
     return clone(fakeTasks)
   },
-  async addTask(task) {
+  async addTask(task: TaskInput): Promise<Task> {
     await wait(500)
     const nextTask = { ...task, id: Date.now(), completed: false }
     fakeTasks = [nextTask, ...fakeTasks]
     return clone(nextTask)
   },
-  async toggleTask(id) {
+  async toggleTask(id: number): Promise<Task> {
     await wait(300)
     fakeTasks = fakeTasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task))
-    return clone(fakeTasks.find((task) => task.id === id))
+    const updatedTask = fakeTasks.find((task) => task.id === id)
+    if (!updatedTask) throw new Error(`Task with id ${id} was not found`)
+    return clone(updatedTask)
   },
-  async updateTask(id, updates) {
+  async updateTask(id: number, updates: TaskUpdates): Promise<Task> {
     await wait(450)
     fakeTasks = fakeTasks.map((task) => (task.id === id ? { ...task, ...updates } : task))
-    return clone(fakeTasks.find((task) => task.id === id))
+    const updatedTask = fakeTasks.find((task) => task.id === id)
+    if (!updatedTask) throw new Error(`Task with id ${id} was not found`)
+    return clone(updatedTask)
   },
-  async deleteTask(id){
+  async deleteTask(id: number): Promise<number> {
     await wait (400)
     fakeTasks = fakeTasks.filter((task) => task.id !== id)
     return id
   },
-  async listEvents() {
+  async listEvents(): Promise<CalendarEvent[]> {
     await wait(500)
     return clone(fakeEvents)
   },
-  async addEvent(event) {
+  async addEvent(event: EventInput): Promise<CalendarEvent> {
     await wait(450)
     const nextEvent = { ...event, id: Date.now() }
     fakeEvents = [nextEvent, ...fakeEvents]
     return clone(nextEvent)
   },
-  async updateEvent(id, updates) {
+  async updateEvent(id: number, updates: EventUpdates): Promise<CalendarEvent> {
     await wait(450)
     fakeEvents = fakeEvents.map((event) => (event.id === id ? { ...event, ...updates } : event))
-    return clone(fakeEvents.find((event) => event.id === id))
+    const updatedEvent = fakeEvents.find((event) => event.id === id)
+    if (!updatedEvent) throw new Error(`Event with id ${id} was not found`)
+    return clone(updatedEvent)
   },
-  async deleteEvent(id) {
+  async deleteEvent(id: number): Promise<number> {
     await wait(400)
     fakeEvents = fakeEvents.filter((event) => event.id !== id)
     return id
   }
 }
 
-function wait(ms) {
+function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 const DAILY_CAPACITY_MINUTES = (24 - 8 - 3) * 60
 
-function getDifficultyMultiplier(difficulty) {
+function getDifficultyMultiplier(difficulty: number) {
   const normalizedDifficulty = Number.isFinite(Number(difficulty)) ? Number(difficulty) : 1
   const clampedDifficulty = Math.max(1, Math.min(5, normalizedDifficulty))
   return 1 + (clampedDifficulty - 1) * 0.2
 }
 
-function calculateCapacity(tasks) {
+function calculateCapacity(tasks: Task[]) {
   const totalLoadMinutes = tasks.reduce((sum, task) => {
     const taskMinutes = Math.max(0, Number(task.estimatedMinutes) || 0)
     const difficultyMultiplier = getDifficultyMultiplier(task.difficulty)
@@ -90,7 +135,7 @@ function calculateCapacity(tasks) {
   return Math.min(100, Math.round(capacityPercent))
 }
 
-function getEventDurationMinutes(event) {
+function getEventDurationMinutes(event: CalendarEvent) {
   const startHour24 = to24Hour(event.startHour, event.startPeriod)
   const endHour24 = to24Hour(event.endHour, event.endPeriod)
   const startMinute = Math.max(0, Math.min(59, Number.parseInt(event.startMinute, 10) || 0))
@@ -105,7 +150,7 @@ function getEventDurationMinutes(event) {
   return Math.max(0, endTotalMinutes - startTotalMinutes)
 }
 
-function calculateCapacityWithEvents(tasks, events) {
+function calculateCapacityWithEvents(tasks: Task[], events: CalendarEvent[]) {
   const taskLoadMinutes = tasks.reduce((sum, task) => {
     const taskMinutes = Math.max(0, Number(task.estimatedMinutes) || 0)
     const difficultyMultiplier = getDifficultyMultiplier(task.difficulty)
@@ -119,12 +164,12 @@ function calculateCapacityWithEvents(tasks, events) {
   return Math.min(100, Math.round(capacityPercent))
 }
 
-function getTaskTimingBucket(task, anchorDate) {
+function getTaskTimingBucket(task: Task, anchorDate: Date) {
   const dueDate = parseDueDateTime(String(task.due || ''))
   return getRelativeTimingBucket(dueDate, anchorDate)
 }
 
-function getRelativeTimingBucket(dateValue, anchorDate) {
+function getRelativeTimingBucket(dateValue: Date, anchorDate: Date) {
   if (Number.isNaN(dateValue.getTime())) return 'this-week'
 
   const anchorDay = new Date(
@@ -148,7 +193,7 @@ function getRelativeTimingBucket(dateValue, anchorDate) {
   return 'outside-week'
 }
 
-function formatShortDateLabel(dateString) {
+function formatShortDateLabel(dateString: string) {
   const date = new Date(`${dateString}T00:00:00`)
   if (Number.isNaN(date.getTime())) return ''
 
@@ -159,7 +204,7 @@ function formatShortDateLabel(dateString) {
   })
 }
 
-function parseDueDateTime(dueString) {
+function parseDueDateTime(dueString: string): Date {
   try {
     const dateTimeRegex = /^(.+?)\s+(\d{1,2}):(\d{2})\s+(AM|PM)$/
     const match = dueString.match(dateTimeRegex)
@@ -184,7 +229,7 @@ function parseDueDateTime(dueString) {
   }
 }
 
-function getPriorityValue(priority) {
+function getPriorityValue(priority: string) {
   switch (String(priority).toLowerCase()) {
     case 'high':
       return 3
@@ -197,14 +242,14 @@ function getPriorityValue(priority) {
   }
 }
 
-function getCapacityLevel(value) {
+function getCapacityLevel(value: number) {
   if (value === 0) return 'none'
   if (value <= 40) return 'low'
   if (value <= 70) return 'medium'
   return 'high'
 }
 
-function normalizeHourInput(value) {
+function normalizeHourInput(value: string) {
   const digits = String(value || '').replace(/[^0-9]/g, '').slice(0, 2)
   if (!digits) return '01'
 
@@ -214,7 +259,7 @@ function normalizeHourInput(value) {
   return String(hour).padStart(2, '0')
 }
 
-function normalizeMinuteInput(value) {
+function normalizeMinuteInput(value: string) {
   const digits = String(value || '').replace(/[^0-9]/g, '').slice(0, 2)
   if (!digits) return '00'
 
@@ -224,21 +269,21 @@ function normalizeMinuteInput(value) {
   return String(minute).padStart(2, '0')
 }
 
-function startOfDay(date) {
+function startOfDay(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }
 
-function addDays(date, days) {
+function addDays(date: Date, days: number) {
   const next = new Date(date)
   next.setDate(next.getDate() + days)
   return next
 }
 
-function isSameDay(a, b) {
+function isSameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
 }
 
-function getRelativeDayLabel(date, referenceDate) {
+function getRelativeDayLabel(date: Date, referenceDate: Date) {
   const current = startOfDay(date)
   const reference = startOfDay(referenceDate)
   const millisPerDay = 24 * 60 * 60 * 1000
@@ -253,7 +298,7 @@ function getRelativeDayLabel(date, referenceDate) {
 }
 
 
-const TASK_SORT_GROUPS = [
+const TASK_SORT_GROUPS: { label: string; options: { value: TaskSortOption; label: string; detail: string; icon: string }[] }[] = [
   {
     label: 'Due date',
     options: [
@@ -295,21 +340,21 @@ const TASK_SORT_OPTIONS = TASK_SORT_GROUPS.flatMap((group) =>
   group.options.map((option) => ({ ...option, groupLabel: group.label }))
 )
 
-function getSortOptionMeta(sortOption) {
+function getSortOptionMeta(sortOption: TaskSortOption) {
   return TASK_SORT_OPTIONS.find((option) => option.value === sortOption)
 }
 
-function getSortOptionLabel(sortOption) {
+function getSortOptionLabel(sortOption: TaskSortOption) {
   return getSortOptionMeta(sortOption)?.groupLabel || 'Sort tasks'
 }
 
-function getSortOptionSummary(sortOption) {
+function getSortOptionSummary(sortOption: TaskSortOption) {
   const option = getSortOptionMeta(sortOption)
   if (!option) return 'Sort tasks'
   return `${option.groupLabel}, ${option.detail.toLowerCase()}`
 }
 
-function compareTasks(a, b, sortOption) {
+function compareTasks(a: Task, b: Task, sortOption: TaskSortOption) {
   if (a.completed !== b.completed) {
     return a.completed ? 1 : -1
   }
@@ -378,18 +423,18 @@ function compareTasks(a, b, sortOption) {
       return getPriorityValue(b.priority) - getPriorityValue(a.priority)
   }
 }
-function getStartOfWeek(date) {
+function getStartOfWeek(date: Date) {
   const dayStart = startOfDay(date)
   return addDays(dayStart, -dayStart.getDay())
 }
 
 const SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-function formatShortMonthDay(date) {
+function formatShortMonthDay(date: Date) {
   return `${SHORT_MONTH_NAMES[date.getMonth()]} ${date.getDate()}`
 }
 
-function formatWeekRange(date) {
+function formatWeekRange(date: Date) {
   const weekStart = getStartOfWeek(date)
   const weekEnd = addDays(weekStart, 6)
   const sameYear = weekStart.getFullYear() === weekEnd.getFullYear()
@@ -406,18 +451,18 @@ function formatWeekRange(date) {
   return `${formatShortMonthDay(weekStart)}, ${weekStart.getFullYear()} - ${formatShortMonthDay(weekEnd)}, ${weekEnd.getFullYear()}`
 }
 
-function formatEventTime(event) {
+function formatEventTime(event: CalendarEvent) {
   return `${normalizeHourInput(event.startHour)}:${normalizeMinuteInput(event.startMinute)} ${event.startPeriod} - ${normalizeHourInput(event.endHour)}:${normalizeMinuteInput(event.endMinute)} ${event.endPeriod}`
 }
 
-function to24Hour(hourValue, period) {
+function to24Hour(hourValue: string, period: DayPeriod) {
   const hour = Math.max(1, Math.min(12, Number.parseInt(hourValue, 10) || 12))
   if (period === 'PM' && hour !== 12) return hour + 12
   if (period === 'AM' && hour === 12) return 0
   return hour
 }
 
-function toClockLabel(date) {
+function toClockLabel(date: Date) {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
@@ -431,23 +476,23 @@ const WEEKDAY_OPTIONS = [
   { value: 6, label: 'S' },
 ]
 
-const CATEGORY_OPTIONS = [
+const CATEGORY_OPTIONS: { value: Category; label: string; colorLabel: string; shapeLabel: string; shapeClass: string }[] = [
   { value: 'work', label: 'Work', colorLabel: 'Blue', shapeLabel: 'Circle', shapeClass: 'shape-circle' },
   { value: 'personal', label: 'Personal', colorLabel: 'Pink', shapeLabel: 'Square', shapeClass: 'shape-square' },
   { value: 'health', label: 'Health', colorLabel: 'Green', shapeLabel: 'Triangle', shapeClass: 'shape-triangle' },
   { value: 'learning', label: 'Learning', colorLabel: 'Amber', shapeLabel: 'Diamond', shapeClass: 'shape-diamond' },
 ]
 
-function getCategoryOption(categoryValue) {
+function getCategoryOption(categoryValue: string) {
   return CATEGORY_OPTIONS.find((option) => option.value === categoryValue) || CATEGORY_OPTIONS[0]
 }
 
-function getCategoryLegendLabel(categoryValue) {
+function getCategoryLegendLabel(categoryValue: string) {
   const category = getCategoryOption(categoryValue)
   return `${category.colorLabel} ${category.shapeLabel}`
 }
 
-function renderCategoryIndicator(categoryValue, placementClass = '') {
+function renderCategoryIndicator(categoryValue: string, placementClass = '') {
   const category = getCategoryOption(categoryValue)
   const indicatorLabel = `${category.label}: ${getCategoryLegendLabel(categoryValue)}`
 
@@ -461,18 +506,19 @@ function renderCategoryIndicator(categoryValue, placementClass = '') {
   )
 }
 
-function normalizeRepeatDays(days) {
+function normalizeRepeatDays(days: unknown): number[] {
   if (!Array.isArray(days)) return []
-  return [...new Set(days.map((day) => Number(day)).filter((day) => Number.isInteger(day) && day >= 0 && day <= 6))].sort((a, b) => a - b)
+  const dayValues: unknown[] = days
+  return [...new Set(dayValues.map((day) => Number(day)).filter((day) => Number.isInteger(day) && day >= 0 && day <= 6))].sort((a, b) => a - b)
 }
 
-function getRepeatSummary(item) {
+function getRepeatSummary(item: RepeatOptions) {
   const repeatType = item.repeatType || 'none'
   if (repeatType === 'daily') return 'Repeats daily'
   if (repeatType === 'weekly') return 'Repeats weekly'
   if (repeatType === 'monthly') return 'Repeats monthly'
   if (repeatType === 'every-n-days') {
-    const n = Math.max(1, Number.parseInt(item.repeatEveryNDays, 10) || 1)
+    const n = Math.max(1, Number.parseInt(String(item.repeatEveryNDays ?? 1), 10) || 1)
     return `Repeats every ${n} day${n === 1 ? '' : 's'}`
   }
   if (repeatType === 'weekly-x') {
@@ -488,7 +534,7 @@ function getRepeatSummary(item) {
   return ''
 }
 
-function occursOnDate(item, anchorDate, targetDate) {
+function occursOnDate(item: RepeatOptions, anchorDate: Date, targetDate: Date) {
   if (!anchorDate || Number.isNaN(anchorDate.getTime())) return false
 
   const anchor = startOfDay(anchorDate)
@@ -514,7 +560,7 @@ function occursOnDate(item, anchorDate, targetDate) {
     case 'monthly':
       return target.getDate() === anchor.getDate()
     case 'every-n-days': {
-      const n = Math.max(1, Number.parseInt(item.repeatEveryNDays, 10) || 1)
+      const n = Math.max(1, Number.parseInt(String(item.repeatEveryNDays ?? 1), 10) || 1)
       return dayDiff % n === 0
     }
     default:
@@ -526,9 +572,9 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(() => startOfDay(new Date()))
   const [currentTime, setCurrentTime] = useState(() => new Date())
 
-  const [collapsedBuckets, setCollapsedBuckets] = useState({})
+  const [collapsedBuckets, setCollapsedBuckets] = useState<Record<string, boolean>>({})
 
-  function toggleBucket(key) {
+  function toggleBucket(key: string) {
     setCollapsedBuckets((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
@@ -557,7 +603,7 @@ function App() {
     return `${year}-${month}-${day}`
   }
 
-  const getUpcomingHourDefaults = () => {
+  const getUpcomingHourDefaults = (): Pick<TaskForm, 'dueTimeHour' | 'dueTimeMinute' | 'dueTimePeriod'> => {
     const now = new Date()
     const nextHour24 = Math.min(23, now.getHours() + 1)
     const hour12 = nextHour24 % 12 || 12
@@ -570,12 +616,12 @@ function App() {
     }
   }
   
-  const formatDateForDisplay = (isoDate) => {
+  const formatDateForDisplay = (isoDate: string) => {
     const date = new Date(isoDate + 'T00:00:00')
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
-  const createDefaultForm = () => ({
+  const createDefaultForm = (): TaskForm => ({
     title: '',
     notes: '',
     priority: 'Medium',
@@ -590,7 +636,7 @@ function App() {
     repeatEndDate: '',
   })
 
-  const createDefaultEventForm = () => ({
+  const createDefaultEventForm = (): EventForm => ({
     title: '',
     notes: '',
     date: getTodayISOString(),
@@ -608,7 +654,7 @@ function App() {
     repeatEndDate: '',
   })
 
-  const getFormFromEvent = (event) => ({
+  const getFormFromEvent = (event: CalendarEvent): EventForm => ({
     title: event.title || '',
     notes: event.notes || '',
     date: event.date || getTodayISOString(),
@@ -626,7 +672,7 @@ function App() {
     repeatEndDate: event.repeatEndDate || '',
   })
 
-  const getFormFromTask = (task) => {
+  const getFormFromTask = (task: Task): TaskForm => {
     const dueDateTime = parseDueDateTime(task.due)
     const fallbackDate = new Date()
     const safeDate = Number.isNaN(dueDateTime.getTime()) ? fallbackDate : dueDateTime
@@ -655,26 +701,26 @@ function App() {
     }
   }
   
-  const [tasks, setTasks] = useState([])
-  const [events, setEvents] = useState([])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
-  const [screen, setScreen] = useState('home')
+  const [screen, setScreen] = useState<Screen>('home')
   const [composerOpen, setComposerOpen] = useState(false)
-  const [composerMode, setComposerMode] = useState('task')
-  const [editingTaskId, setEditingTaskId] = useState(null)
-  const [editingEventId, setEditingEventId] = useState(null)
+  const [composerMode, setComposerMode] = useState<'task' | 'event'>('task')
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
+  const [editingEventId, setEditingEventId] = useState<number | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
   const [sortMenuOpen, setSortMenuOpen] = useState(false)
-  const [taskSortOption, setTaskSortOption] = useState('due-asc')
-  const [touchStartX, setTouchStartX] = useState(null)
-  const [touchStartY, setTouchStartY] = useState(null)
+  const [taskSortOption, setTaskSortOption] = useState<TaskSortOption>('due-asc')
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [touchStartY, setTouchStartY] = useState<number | null>(null)
   const [query, setQuery] = useState('')
-  const [form, setForm] = useState(createDefaultForm)
-  const [eventForm, setEventForm] = useState(createDefaultEventForm)
-  const sortMenuRef = useRef(null)
+  const [form, setForm] = useState<TaskForm>(createDefaultForm)
+  const [eventForm, setEventForm] = useState<EventForm>(createDefaultEventForm)
+  const sortMenuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     let active = true
@@ -693,12 +739,12 @@ function App() {
   useEffect(() => {
     if (!sortMenuOpen) return
 
-    function handlePointerDown(event) {
-      if (sortMenuRef.current && sortMenuRef.current.contains(event.target)) return
+    function handlePointerDown(event: PointerEvent) {
+      if (sortMenuRef.current && event.target instanceof Node && sortMenuRef.current.contains(event.target)) return
       setSortMenuOpen(false)
     }
 
-    function handleKeyDown(event) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         setSortMenuOpen(false)
       }
@@ -754,9 +800,9 @@ function App() {
 
   const weeklyBuckets = useMemo(() => {
     const buckets = [
-      { key: 'Today', tasks: [] },
-      { key: 'Tomorrow', tasks: [] },
-      { key: 'This Week', tasks: [] },
+      { key: 'Today', tasks: [] as Task[] },
+      { key: 'Tomorrow', tasks: [] as Task[] },
+      { key: 'This Week', tasks: [] as Task[] },
     ]
 
     searchedAndSortedTasks.forEach((task) => {
@@ -777,9 +823,9 @@ function App() {
 
   const weeklyEventBuckets = useMemo(() => {
     const buckets = [
-      { key: 'Today', events: [] },
-      { key: 'Tomorrow', events: [] },
-      { key: 'This Week', events: [] },
+      { key: 'Today', events: [] as CalendarEvent[] },
+      { key: 'Tomorrow', events: [] as CalendarEvent[] },
+      { key: 'This Week', events: [] as CalendarEvent[] },
     ]
 
     filteredEvents.forEach((event) => {
@@ -861,7 +907,7 @@ function App() {
           leftPercent: (offsetMinutes / totalMinutes) * 100,
         }
       })
-      .filter(Boolean)
+      .filter((taskDot): taskDot is NonNullable<typeof taskDot> => taskDot !== null)
   
     const ticks = Array.from({ length: tickCount + 1 }, (_, index) => ({
       id: `tick-${index}`,
@@ -897,8 +943,8 @@ function App() {
   const weekDayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
   const weeklyCapacity = useMemo(() => {
     const weekStart = getStartOfWeek(selectedDate)
-    const tasksByDay = Array.from({ length: 7 }, () => [])
-    const eventsByDay = Array.from({ length: 7 }, () => [])
+    const tasksByDay = Array.from({ length: 7 }, (): Task[] => [])
+    const eventsByDay = Array.from({ length: 7 }, (): CalendarEvent[] => [])
 
     tasks.forEach((task) => {
       const anchorDate = parseDueDateTime(task.due)
@@ -942,7 +988,7 @@ function App() {
   }, [selectedDate])
   const weeklyHeaderLabel = isViewingCurrentWeek ? `${weeklyRangeLabel} (Current)` : weeklyRangeLabel
 
-  const timelineScrollRef = useRef(null)
+  const timelineScrollRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const el = timelineScrollRef.current
@@ -955,56 +1001,57 @@ function App() {
   useEffect(() => {
     const el = timelineScrollRef.current
     if (!el) return
+    const scrollElement = el
   
     let isDragging = false
     let startX = 0
     let startScrollLeft = 0
   
-    function onPointerDown(e) {
+    function onPointerDown(e: PointerEvent) {
       isDragging = true
       startX = e.clientX
-      startScrollLeft = el.scrollLeft
-      el.setPointerCapture(e.pointerId)
-      el.style.cursor = 'grabbing'
+      startScrollLeft = scrollElement.scrollLeft
+      scrollElement.setPointerCapture(e.pointerId)
+      scrollElement.style.cursor = 'grabbing'
       e.preventDefault()
     }
   
-    function onPointerMove(e) {
+    function onPointerMove(e: PointerEvent) {
       if (!isDragging) return
       const delta = e.clientX - startX
-      el.scrollLeft = startScrollLeft - delta
+      scrollElement.scrollLeft = startScrollLeft - delta
     }
   
     function onPointerUp() {
       isDragging = false
-      el.style.cursor = ''
+      scrollElement.style.cursor = ''
     }
   
-    el.addEventListener('pointerdown', onPointerDown)
-    el.addEventListener('pointermove', onPointerMove)
-    el.addEventListener('pointerup', onPointerUp)
-    el.addEventListener('pointercancel', onPointerUp)
+    scrollElement.addEventListener('pointerdown', onPointerDown)
+    scrollElement.addEventListener('pointermove', onPointerMove)
+    scrollElement.addEventListener('pointerup', onPointerUp)
+    scrollElement.addEventListener('pointercancel', onPointerUp)
   
     return () => {
-      el.removeEventListener('pointerdown', onPointerDown)
-      el.removeEventListener('pointermove', onPointerMove)
-      el.removeEventListener('pointerup', onPointerUp)
-      el.removeEventListener('pointercancel', onPointerUp)
+      scrollElement.removeEventListener('pointerdown', onPointerDown)
+      scrollElement.removeEventListener('pointermove', onPointerMove)
+      scrollElement.removeEventListener('pointerup', onPointerUp)
+      scrollElement.removeEventListener('pointercancel', onPointerUp)
     }
   }, [screen])
 
-  function shiftSelectedDate(days) {
+  function shiftSelectedDate(days: number) {
     setSelectedDate((current) => startOfDay(addDays(current, days)))
   }
 
-  function handleTouchStart(event) {
+  function handleTouchStart(event: TouchEvent<HTMLElement>) {
     if (screen !== 'home' && screen !== 'weekly' && screen !== 'monthly') return
     const touch = event.touches[0]
     setTouchStartX(touch.clientX)
     setTouchStartY(touch.clientY)
   }
 
-  function handleTouchEnd(event) {
+  function handleTouchEnd(event: TouchEvent<HTMLElement>) {
     if ((screen !== 'home' && screen !== 'weekly' && screen !== 'monthly') || touchStartX === null || touchStartY === null) return
 
     const touch = event.changedTouches[0]
@@ -1035,7 +1082,7 @@ function App() {
 
   const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-  function getMonthName(date) {
+  function getMonthName(date: Date) {
     return date.toLocaleString('default', { month: 'long', year: 'numeric' })
   }
 
@@ -1060,8 +1107,8 @@ function App() {
       const dayNumber = index + 1
       const dayDate = new Date(year, month, dayNumber)
 
-      const dayTasks = []
-      const dayEvents = []
+      const dayTasks: Task[] = []
+      const dayEvents: CalendarEvent[] = []
 
       tasks.forEach((task) => {
         const anchorDate = parseDueDateTime(task.due)
@@ -1124,7 +1171,7 @@ function App() {
     setComposerOpen(true)
   }
 
-  function openTaskEditor(task) {
+  function openTaskEditor(task: Task) {
     setAddMenuOpen(false)
     setComposerMode('task')
     setEditingTaskId(task.id)
@@ -1134,7 +1181,7 @@ function App() {
     setComposerOpen(true)
   }
 
-  function openEventEditor(event) {
+  function openEventEditor(event: CalendarEvent) {
     setAddMenuOpen(false)
     setComposerMode('event')
     setEditingTaskId(null)
@@ -1156,7 +1203,7 @@ function App() {
     setAddMenuOpen((current) => !current)
   }
 
-  function toggleTaskRepeatDay(dayValue) {
+  function toggleTaskRepeatDay(dayValue: number) {
     setForm((current) => {
       const days = normalizeRepeatDays(current.repeatWeekDays)
       const nextDays = days.includes(dayValue) ? days.filter((day) => day !== dayValue) : [...days, dayValue]
@@ -1164,7 +1211,7 @@ function App() {
     })
   }
 
-  function toggleEventRepeatDay(dayValue) {
+  function toggleEventRepeatDay(dayValue: number) {
     setEventForm((current) => {
       const days = normalizeRepeatDays(current.repeatWeekDays)
       const nextDays = days.includes(dayValue) ? days.filter((day) => day !== dayValue) : [...days, dayValue]
@@ -1176,7 +1223,7 @@ function App() {
     setDeleteConfirmOpen(false)
   }
 
-  async function handleSaveTask(event) {
+  async function handleSaveTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!form.title.trim()) return
     setSyncing(true)
@@ -1229,7 +1276,7 @@ function App() {
     closeComposer()
   }
 
-  async function handleSaveEvent(event) {
+  async function handleSaveEvent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!eventForm.title.trim()) return
 
@@ -1282,7 +1329,7 @@ function App() {
     closeComposer()
   }
 
-  async function handleToggleTask(id) {
+  async function handleToggleTask(id: number) {
     setSyncing(true)
     await fakeBackend.toggleTask(id)
     setTasks((current) => current.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
@@ -1844,7 +1891,7 @@ function App() {
                           setForm((current) => ({ ...current, dueTimeHour: normalizeHourInput(current.dueTimeHour) }))
                         }}
                         placeholder="HH"
-                        maxLength="2"
+                        maxLength={2}
                         inputMode="numeric"
                         className="time-input"
                       />
@@ -1860,11 +1907,11 @@ function App() {
                           setForm((current) => ({ ...current, dueTimeMinute: normalizeMinuteInput(current.dueTimeMinute) }))
                         }}
                         placeholder="MM"
-                        maxLength="2"
+                        maxLength={2}
                         inputMode="numeric"
                         className="time-input"
                       />
-                      <select value={form.dueTimePeriod} onChange={(event) => setForm((current) => ({ ...current, dueTimePeriod: event.target.value }))}>
+                      <select value={form.dueTimePeriod} onChange={(event) => setForm((current) => ({ ...current, dueTimePeriod: parseDayPeriod(event.target.value) }))}>
                         <option>AM</option>
                         <option>PM</option>
                       </select>
@@ -1876,7 +1923,7 @@ function App() {
                       value={form.repeatType}
                       onChange={(event) => setForm((current) => ({
                         ...current,
-                        repeatType: event.target.value,
+                        repeatType: parseRepeatType(event.target.value),
                         repeatEndDate: event.target.value === 'none' ? '' : current.repeatEndDate,
                       }))}
                     >
@@ -1941,7 +1988,7 @@ function App() {
                   </label>
                   <label className="compose-field priority-field">
                     <span className="compose-label">Priority</span>
-                    <select value={form.priority} onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}>
+                    <select value={form.priority} onChange={(event) => setForm((current) => ({ ...current, priority: parsePriority(event.target.value) }))}>
                       <option>High</option>
                       <option>Medium</option>
                       <option>Low</option>
@@ -2046,7 +2093,7 @@ function App() {
                           }}
                           onBlur={() => setEventForm((current) => ({ ...current, startHour: normalizeHourInput(current.startHour) }))}
                           placeholder="HH"
-                          maxLength="2"
+                          maxLength={2}
                           inputMode="numeric"
                           className="time-input"
                         />
@@ -2060,11 +2107,11 @@ function App() {
                           }}
                           onBlur={() => setEventForm((current) => ({ ...current, startMinute: normalizeMinuteInput(current.startMinute) }))}
                           placeholder="MM"
-                          maxLength="2"
+                          maxLength={2}
                           inputMode="numeric"
                           className="time-input"
                         />
-                        <select value={eventForm.startPeriod} onChange={(event) => setEventForm((current) => ({ ...current, startPeriod: event.target.value }))}>
+                        <select value={eventForm.startPeriod} onChange={(event) => setEventForm((current) => ({ ...current, startPeriod: parseDayPeriod(event.target.value) }))}>
                           <option>AM</option>
                           <option>PM</option>
                         </select>
@@ -2076,7 +2123,7 @@ function App() {
                         value={eventForm.repeatType}
                         onChange={(event) => setEventForm((current) => ({
                           ...current,
-                          repeatType: event.target.value,
+                          repeatType: parseRepeatType(event.target.value),
                           repeatEndDate: event.target.value === 'none' ? '' : current.repeatEndDate,
                         }))}
                       >
@@ -2142,7 +2189,7 @@ function App() {
                           }}
                           onBlur={() => setEventForm((current) => ({ ...current, endHour: normalizeHourInput(current.endHour) }))}
                           placeholder="HH"
-                          maxLength="2"
+                          maxLength={2}
                           inputMode="numeric"
                           className="time-input"
                         />
@@ -2156,11 +2203,11 @@ function App() {
                           }}
                           onBlur={() => setEventForm((current) => ({ ...current, endMinute: normalizeMinuteInput(current.endMinute) }))}
                           placeholder="MM"
-                          maxLength="2"
+                          maxLength={2}
                           inputMode="numeric"
                           className="time-input"
                         />
-                        <select value={eventForm.endPeriod} onChange={(event) => setEventForm((current) => ({ ...current, endPeriod: event.target.value }))}>
+                        <select value={eventForm.endPeriod} onChange={(event) => setEventForm((current) => ({ ...current, endPeriod: parseDayPeriod(event.target.value) }))}>
                           <option>AM</option>
                           <option>PM</option>
                         </select>

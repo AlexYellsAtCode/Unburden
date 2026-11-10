@@ -37,6 +37,7 @@ npm run dev        # Start dev server (main app, no phone simulation, empty data
 npm run dev:demo   # Start dev server with phone simulation frame and sample seed data
 npm run build      # Create production builds (both main and demo versions)
 npm run build:demo # Create production build with phone simulation and sample seed data
+npm run typecheck  # Run strict TypeScript checks without emitting files
 npm run preview    # Serve the production build locally
 npm run deploy     # Build and deploy to GitHub Pages (gh-pages branch)
 ```
@@ -49,7 +50,7 @@ npm run deploy     # Build and deploy to GitHub Pages (gh-pages branch)
 
 ```
 src/
-├── App.jsx              # Main application component (~2200+ lines)
+├── App.tsx              # Main application component (~2200+ lines)
 │                        # Contains:
 │                        # - State management (tasks, events, UI state)
 │                        # - Fake backend implementation
@@ -57,20 +58,21 @@ src/
 │                        # - Event handlers and calculations
 │                        # - No phone simulation UI code
 │
-├── main.jsx             # Main app entry point (renders App directly)
-├── main-demo.jsx        # Demo app entry point (wraps App with phone frame)
+├── main.tsx             # Main app entry point (renders App directly)
+├── main-demo.tsx        # Demo app entry point (wraps App with phone frame)
 │
 ├── components/
-│   ├── PhoneFrameWrapper.jsx  # Phone mockup frame (only in demo build)
-│   └── StatusBar.jsx          # Phone status bar (only in demo build)
+│   ├── PhoneFrameWrapper.tsx  # Phone mockup frame (only in demo build)
+│   └── StatusBar.tsx          # Phone status bar (only in demo build)
 │
 ├── utils/
-│   └── deviceDetection.js     # Mobile device detection (only in demo build)
+│   └── deviceDetection.ts     # Mobile device detection (only in demo build)
 │
-├── seedData.js          # Sample tasks and events for demo
+├── seedData.ts          # Sample tasks and events for demo
+├── types.ts             # Shared task, event, recurrence, and form types
 ├── styles.css           # Single stylesheet for entire application
 └── testing/             # Testing utilities
-    └── deviceDetectionTest.js
+    └── deviceDetectionTest.ts
 
 Root/
 ├── index.html           # Main app entry HTML
@@ -80,14 +82,14 @@ Root/
 
 ### Entry Points
 
-#### Main App (`index.html` → `src/main.jsx`)
+#### Main App (`index.html` → `src/main.tsx`)
 - Lightweight entry point
 - Renders App component directly
 - No phone simulation wrapper
 - ~0.19 KB bundle size
 - Best for: production, mobile testing, core development
 
-#### Demo App (`index-demo.html` → `src/main-demo.jsx`)
+#### Demo App (`index-demo.html` → `src/main-demo.tsx`)
 - Wraps App with `PhoneFrameWrapper`
 - Includes device detection and phone status bar
 - Loads seed data automatically
@@ -96,7 +98,11 @@ Root/
 
 ### Key Concepts to Understand
 
-#### 1. State Management in App.jsx
+#### Type Checking
+
+Run `npm run typecheck` after changing application code. TypeScript configuration is in `tsconfig.json`; shared task, event, recurrence, and form contracts are in `src/types.ts`. Keep those contracts aligned with data returned by the simulated backend and seed data.
+
+#### 1. State Management in App.tsx
 
 The App component holds all state:
 
@@ -203,7 +209,7 @@ repeatType: 'monthly'
 
 #### Modifying the Fake Backend
 
-1. Open `App.jsx` and locate the `fakeBackend` object
+1. Open `App.tsx` and locate the `fakeBackend` object
 2. Modify the method or add a new one
 3. Update `fakeTasks` or `fakeEvents` accordingly
 4. Call the method from your UI handler
@@ -285,13 +291,13 @@ This command:
 
 ### Add a New Task Category
 
-1. Modify seed data in `App.jsx` to include the category
+1. Modify seed data in `seedData.ts` to include the category
 2. Update any UI that displays category options
 3. Ensure calculations handle the new category
 
 ### Change Capacity Calculation
 
-1. Locate the capacity calculation function in `App.jsx`
+1. Locate the capacity calculation function in `App.tsx`
 2. Modify the formula
 3. Test in the monthly view to verify colors update correctly
 
@@ -354,4 +360,3 @@ npm run dev
 - Review [ARCHITECTURE.md](./ARCHITECTURE.md) for system design details
 - Check [DATA_MODEL.md](./DATA_MODEL.md) for complete data specifications
 - See [FEATURES.md](./FEATURES.md) for feature descriptions and use cases
-

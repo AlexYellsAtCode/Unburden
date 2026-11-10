@@ -7,18 +7,18 @@ The phone simulation UI chrome (status bar with time, WiFi/signal bars, battery 
 ## Files Created
 
 ### 1. Core Components
-- **`src/components/StatusBar.jsx`** (715 bytes)
+- **`src/components/StatusBar.tsx`** (715 bytes)
   - Extracted status bar component showing time, signal bars, battery
   - Reusable across mobile and desktop contexts
 
-- **`src/components/PhoneFrameWrapper.jsx`** (999 bytes)
+- **`src/components/PhoneFrameWrapper.tsx`** (999 bytes)
   - Conditional wrapper that switches between:
     - Desktop: Phone mockup frame with simulated status bar
     - Mobile: Full-screen responsive layout without frame
   - Takes 3 props: `children`, `currentTime`, `isMobileMode`
 
 ### 2. Utilities
-- **`src/utils/deviceDetection.js`** (1,269 bytes)
+- **`src/utils/deviceDetection.ts`** (1,269 bytes)
   - `isMobileEnvironment()`: Multi-factor device detection
     - PWA standalone mode detection
     - Mobile user agent checking
@@ -27,7 +27,7 @@ The phone simulation UI chrome (status bar with time, WiFi/signal bars, battery 
   - `isMobileViewport()`: Responsive breakpoint detection
 
 ### 3. Testing & Documentation
-- **`src/testing/deviceDetectionTest.js`** (2,266 bytes)
+- **`src/testing/deviceDetectionTest.ts`** (2,266 bytes)
   - Browser console test utilities
   - Verifies device detection logic
   - Helps debug mobile/desktop mode switching
@@ -40,7 +40,7 @@ The phone simulation UI chrome (status bar with time, WiFi/signal bars, battery 
 
 ## Files Modified
 
-### 1. `src/App.jsx`
+### 1. `src/App.tsx`
 **Changes:**
 - Added imports for device detection and wrapper components
 - Added `isMobileMode` state tracking
@@ -217,10 +217,10 @@ function isWeb() { return !isIOS() && !isAndroid() }
 
 | File | Size | Purpose |
 |------|------|---------|
-| `src/components/StatusBar.jsx` | 715 B | Simulated OS status bar |
-| `src/components/PhoneFrameWrapper.jsx` | 999 B | Conditional render wrapper |
-| `src/utils/deviceDetection.js` | 1.3 KB | Device detection logic |
-| `src/testing/deviceDetectionTest.js` | 2.3 KB | Testing utilities |
+| `src/components/StatusBar.tsx` | 715 B | Simulated OS status bar |
+| `src/components/PhoneFrameWrapper.tsx` | 999 B | Conditional render wrapper |
+| `src/utils/deviceDetection.ts` | 1.3 KB | Device detection logic |
+| `src/testing/deviceDetectionTest.ts` | 2.3 KB | Testing utilities |
 | `docs/PHONE_SIMULATION_ARCHITECTURE.md` | 7.3 KB | Architecture documentation |
 | **Total** | **~12 KB** | Clean, modular implementation |
 

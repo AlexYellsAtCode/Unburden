@@ -1,5 +1,9 @@
-export function StatusBar({ currentTime }) {
-  function toClockLabel(date) {
+interface StatusBarProps {
+  currentTime: Date
+}
+
+export function StatusBar({ currentTime }: StatusBarProps) {
+  function toClockLabel(date: Date) {
     const hours = String(date.getHours()).padStart(2, '0')
     const minutes = String(date.getMinutes()).padStart(2, '0')
     return `${hours}:${minutes}`
