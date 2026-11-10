@@ -1,9 +1,24 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+// In demo mode the dev server serves index-demo.html (phone wrapper) at the root
+const demoEntry = () => ({
+  name: 'demo-entry',
+  apply: 'serve',
+  configureServer(server) {
+    server.middlewares.use((req, _res, next) => {
+      const [path, query = ''] = req.url.split('?')
+      if (path === '/' || path === '/PlanAware/' || path === '/PlanAware' || path === '/index.html') {
+        req.url = '/PlanAware/index-demo.html' + (query ? `?${query}` : '')
+      }
+      next()
+    })
+  },
+})
+
+export default defineConfig(({ mode }) => ({
   base: '/PlanAware/',
-  plugins: [react()],
+  plugins: [react(), ...(mode === 'demo' ? [demoEntry()] : [])],
   build: {
     rollupOptions: {
       input: {
@@ -12,4 +27,5 @@ export default defineConfig({
       },
     },
   },
-})
+}))
+
