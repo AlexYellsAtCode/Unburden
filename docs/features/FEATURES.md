@@ -200,13 +200,14 @@ This document describes Unburden's features and their use cases, organized by vi
 
 **Steps**:
 1. User selects **Settings** from the bottom navigation
-2. Chooses a built-in theme: Light, Dark, System, Forest, Orange, Ocean, Violet, Rose, Warm sand, or High contrast
-3. Chooses Small, Medium, or Large text
-4. Reviews the live preview and closes the dialog
+2. Chooses a Light/Dark Mode: System, Light, or Dark
+3. Chooses a palette: Neutral, Forest, Sunset, Ocean, Violet, Rose, Warm sand, Coffee, Monochrome, Slate, or High contrast
+4. Chooses Small, Medium, or Large text
+5. Reviews the live preview and closes the dialog
 
 **Behavior**:
-- Light theme and Medium text are the defaults
-- Forest, Orange and black, Ocean, Violet, Rose, Warm sand, and High contrast provide distinct full-app palettes
+- System mode, Neutral palette, and Medium text are the defaults
+- Every palette provides coordinated light and dark variants
 - Changes apply immediately and are stored in local storage
 - System theme follows the operating system and updates when its preference changes
 - Saved settings are restored when PlanAware is reopened
