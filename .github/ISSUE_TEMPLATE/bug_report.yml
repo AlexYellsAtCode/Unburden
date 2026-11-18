@@ -1,0 +1,79 @@
+name: Bug report
+description: Report reproducible incorrect behavior in Unburden.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide enough detail for someone else to reproduce the problem.
+        Do not include private task data, credentials, or other sensitive information.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before reporting
+      options:
+        - label: I searched the existing issues for this problem.
+          required: true
+        - label: I reproduced the problem on the latest version of the application.
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide a minimal, ordered sequence that consistently reproduces the problem.
+      placeholder: |
+        1. Open the Weekly view
+        2. Create a recurring task
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: app-mode
+    attributes:
+      label: Application mode
+      options:
+        - Standard app
+        - Demo app
+        - Both
+        - Unsure
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: "Chrome 142 on Windows 11"
+    validations:
+      required: true
+  - type: dropdown
+    id: viewport
+    attributes:
+      label: Viewport
+      options:
+        - Desktop
+        - Mobile
+        - Responsive breakpoint
+        - Both
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Add screenshots, console errors, or other useful evidence. Remove sensitive local data first.
+      render: text
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other details that may help diagnose the issue.

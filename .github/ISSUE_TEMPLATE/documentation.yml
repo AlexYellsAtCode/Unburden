@@ -1,0 +1,45 @@
+name: Documentation improvement
+description: Report missing, unclear, outdated, or incorrect documentation.
+title: "[Docs]: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation location
+      description: Link to the page or provide its path in the repository.
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Improvement type
+      options:
+        - Missing information
+        - Incorrect information
+        - Unclear explanation
+        - Outdated example
+        - Broken link
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is missing, unclear, outdated, or incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested change
+      description: Describe the wording, example, or structure that would improve the documentation.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add references or related issues.

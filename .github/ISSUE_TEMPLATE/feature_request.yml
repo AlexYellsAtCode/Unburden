@@ -1,0 +1,69 @@
+name: Feature request
+description: Suggest an enhancement or new capability for Unburden.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem and desired outcome, not only a proposed implementation.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues for a similar request.
+          required: true
+        - label: I checked the documented features and future ideas.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What user need or workflow is currently difficult or unsupported?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe how you would like the feature to work.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or other approaches you considered.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Primary area
+      options:
+        - Home / daily timeline
+        - Weekly view
+        - Monthly view
+        - Tasks
+        - Events
+        - Recurrence
+        - Capacity calculation
+        - Persistence
+        - Demo mode
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List the conditions that would make this request complete.
+      placeholder: |
+        - Users can...
+        - The behavior also works...
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add mockups, examples, related issues, or implementation notes.
