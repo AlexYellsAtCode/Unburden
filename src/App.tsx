@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
-import type { FormEvent, TouchEvent } from 'react'
+import type { ChangeEvent, FormEvent, TouchEvent } from 'react'
 import { seedTasks as importedSeedTasks, seedEvents as importedSeedEvents } from './seedData'
-import { loadEvents, loadTasks, saveEvents, saveTasks } from './utils/localStorage'
+import { exportToJSON } from './utils/exportData'
+import { importFromJSON } from './utils/importData'
+import type { BackupData } from './utils/exportData'
+import { loadEvents, loadTasks, saveBackupData, saveEvents, saveTasks } from './utils/localStorage'
 import type {
   CalendarEvent,
   Category,
@@ -646,6 +649,9 @@ function App() {
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
   const [sortMenuOpen, setSortMenuOpen] = useState(false)
+  const [backupMenuOpen, setBackupMenuOpen] = useState(false)
+  const [pendingImport, setPendingImport] = useState<BackupData | null>(null)
+  const [backupNotice, setBackupNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [taskSortOption, setTaskSortOption] = useState<TaskSortOption>('due-asc')
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [touchStartY, setTouchStartY] = useState<number | null>(null)
@@ -653,6 +659,7 @@ function App() {
   const [form, setForm] = useState<TaskForm>(createDefaultForm)
   const [eventForm, setEventForm] = useState<EventForm>(createDefaultEventForm)
   const sortMenuRef = useRef<HTMLDivElement | null>(null)
+  const backupInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     setTasks(loadTasks(seedTasks))
@@ -690,6 +697,12 @@ function App() {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [sortMenuOpen])
+
+  useEffect(() => {
+    if (!backupNotice) return
+    const timeoutId = window.setTimeout(() => setBackupNotice(null), 5000)
+    return () => window.clearTimeout(timeoutId)
+  }, [backupNotice])
 
   const searchedAndSortedTasks = useMemo(() => {
     const normalized = query.toLowerCase().trim()
@@ -1132,6 +1145,7 @@ function App() {
   }
 
   function toggleAddMenu() {
+    setBackupMenuOpen(false)
     setAddMenuOpen((current) => !current)
   }
 
@@ -1153,6 +1167,59 @@ function App() {
 
   function handleCancelDelete(){
     setDeleteConfirmOpen(false)
+  }
+
+  function handleDownloadBackup() {
+    setBackupMenuOpen(false)
+    try {
+      const filename = exportToJSON(tasks, events)
+      setBackupNotice({ type: 'success', message: `Downloaded ${filename}.` })
+    } catch (error) {
+      setBackupNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'The backup could not be downloaded.',
+      })
+    }
+  }
+
+  async function handleImportFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    try {
+      const backup = await importFromJSON(file)
+      setPendingImport(backup)
+    } catch (error) {
+      setBackupNotice({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'The backup could not be imported.',
+      })
+    }
+  }
+
+  function handleConfirmImport() {
+    if (!pendingImport) return
+
+    setSyncing(true)
+    const backupSaved = saveBackupData(pendingImport.tasks, pendingImport.events)
+    if (!backupSaved) {
+      setSyncing(false)
+      setBackupNotice({
+        type: 'error',
+        message: 'The backup could not be saved. Your current data was not replaced.',
+      })
+      return
+    }
+
+    setTasks(pendingImport.tasks)
+    setEvents(pendingImport.events)
+    setPendingImport(null)
+    setSyncing(false)
+    setBackupNotice({
+      type: 'success',
+      message: `Restored ${pendingImport.tasks.length} tasks and ${pendingImport.events.length} events.`,
+    })
   }
 
   function handleSaveTask(event: FormEvent<HTMLFormElement>) {
@@ -1728,6 +1795,94 @@ function App() {
               </div>
             </div>
           )}
+
+          {pendingImport ? (
+            <div className="backup-modal-backdrop" onClick={() => setPendingImport(null)}>
+              <div
+                className="backup-modal"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="restore-backup-title"
+                aria-describedby="restore-backup-description"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <p className="eyebrow">Backup preview</p>
+                <h3 className="backup-modal-title" id="restore-backup-title">Restore this backup?</h3>
+                <p className="backup-modal-text" id="restore-backup-description">
+                  This will replace your current data with {pendingImport.tasks.length} tasks and {pendingImport.events.length} events.
+                </p>
+                <dl className="backup-preview">
+                  <div>
+                    <dt>Exported</dt>
+                    <dd>{new Date(pendingImport.exportDate).toLocaleString()}</dd>
+                  </div>
+                  <div>
+                    <dt>App version</dt>
+                    <dd>{pendingImport.appVersion}</dd>
+                  </div>
+                </dl>
+                <p className="backup-warning">This action cannot be undone. Download a backup of your current data first if needed.</p>
+                <div className="backup-modal-actions">
+                  <button type="button" className="backup-secondary-btn" onClick={() => setPendingImport(null)} disabled={syncing}>
+                    Cancel
+                  </button>
+                  <button type="button" className="backup-restore-btn" onClick={handleConfirmImport} disabled={syncing}>
+                    {syncing ? 'Restoring…' : 'Replace and restore'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {backupNotice ? (
+            <div className={`backup-toast ${backupNotice.type}`} role={backupNotice.type === 'error' ? 'alert' : 'status'}>
+              {backupNotice.message}
+            </div>
+          ) : null}
+
+          <input
+            ref={backupInputRef}
+            className="backup-file-input"
+            type="file"
+            accept="application/json,.json"
+            onChange={handleImportFile}
+            aria-label="Choose backup file"
+          />
+
+          {backupMenuOpen ? (
+            <div className="backup-action-menu" role="menu" aria-label="Backup and restore">
+              <p className="backup-menu-title">Backup / Restore</p>
+              <button type="button" className="backup-action-pill" onClick={handleDownloadBackup} role="menuitem">
+                Download Backup
+              </button>
+              <button
+                type="button"
+                className="backup-action-pill"
+                onClick={() => {
+                  setBackupMenuOpen(false)
+                  backupInputRef.current?.click()
+                }}
+                role="menuitem"
+              >
+                Import Backup
+              </button>
+            </div>
+          ) : null}
+
+          <button
+            className={`floating-backup${backupMenuOpen ? ' is-active' : ''}`}
+            type="button"
+            onClick={() => {
+              setAddMenuOpen(false)
+              setBackupMenuOpen((current) => !current)
+            }}
+            aria-label="Backup and restore data"
+            aria-haspopup="menu"
+            aria-expanded={backupMenuOpen}
+            title="Backup and restore"
+          >
+            <span className="floating-backup-icon" aria-hidden="true">↓</span>
+          </button>
 
           {addMenuOpen ? (
             <div className="add-action-menu" role="menu" aria-label="Create item">

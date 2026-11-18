@@ -1644,6 +1644,207 @@ button {
   z-index: 4;
 }
 
+.backup-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.backup-action-menu {
+  position: absolute;
+  left: 18px;
+  bottom: 184px;
+  width: 176px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow: 0 12px 24px rgba(2, 6, 23, 0.45);
+  z-index: 4;
+}
+
+.backup-menu-title {
+  margin: 0 4px 2px;
+  color: rgba(226, 232, 240, 0.65);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.backup-action-pill {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(30, 41, 59, 0.92);
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.backup-action-pill:hover {
+  background: rgba(51, 65, 85, 0.96);
+}
+
+.floating-backup {
+  position: absolute;
+  left: 18px;
+  bottom: 84px;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.96);
+  color: #7dd3fc;
+  box-shadow: 0 16px 28px rgba(2, 6, 23, 0.42);
+  z-index: 3;
+  transform: translateY(-25px);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.floating-backup.is-active {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.floating-backup-icon {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.backup-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.backup-modal {
+  width: min(100%, 360px);
+  padding: 20px;
+  border: 1px solid rgba(125, 211, 252, 0.25);
+  border-radius: 20px;
+  background: #0f172a;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+}
+
+.backup-modal-title {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+}
+
+.backup-modal-text,
+.backup-warning {
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+.backup-modal-text {
+  margin: 0 0 14px;
+}
+
+.backup-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.backup-preview div {
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.72);
+}
+
+.backup-preview dt {
+  margin-bottom: 4px;
+  color: #94a3b8;
+  font-size: 0.72rem;
+}
+
+.backup-preview dd {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.backup-warning {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-left: 3px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  font-size: 0.82rem;
+}
+
+.backup-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.backup-secondary-btn,
+.backup-restore-btn {
+  border: 0;
+  border-radius: 11px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.backup-secondary-btn {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.backup-restore-btn {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.backup-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 164px;
+  z-index: 3200;
+  width: min(calc(100% - 32px), 330px);
+  padding: 11px 14px;
+  border: 1px solid;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.45);
+  transform: translateX(-50%);
+}
+
+.backup-toast.success {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: #166534;
+}
+
+.backup-toast.error {
+  border-color: rgba(248, 113, 113, 0.55);
+  background: #991b1b;
+}
+
 .add-action-pill {
   border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 999px;
@@ -1677,6 +1878,16 @@ button {
   z-index: 3;
   transform: translateY(-25px);
   transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-backup {
+  left: 14px;
+  bottom: 82px;
+}
+
+.backup-action-menu {
+  left: 14px;
+  bottom: 176px;
 }
 
 .floating-add.is-active {
