@@ -23,6 +23,28 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value)
 }
 
+function isText(value: unknown, maxLength: number, required = false): value is string {
+  return (
+    typeof value === 'string' &&
+    value.length <= maxLength &&
+    (!required || value.trim().length > 0)
+  )
+}
+
+function isDateString(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  const date = new Date(`${value}T00:00:00Z`)
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+}
+
+function isHour(value: unknown): value is string {
+  return typeof value === 'string' && /^(?:0?[1-9]|1[0-2])$/.test(value)
+}
+
+function isMinute(value: unknown): value is string {
+  return typeof value === 'string' && /^(?:[0-5]\d)$/.test(value)
+}
+
 function isOptionalRepeatOptions(value: Record<string, unknown>): boolean {
   const repeatTypeIsValid = value.repeatType === undefined || repeatTypes.has(value.repeatType as RepeatType)
   const weekDaysAreValid =
@@ -31,47 +53,60 @@ function isOptionalRepeatOptions(value: Record<string, unknown>): boolean {
       value.repeatWeekDays.every((day) => isFiniteNumber(day) && Number.isInteger(day) && day >= 0 && day <= 6))
   const intervalIsValid =
     value.repeatEveryNDays === undefined ||
-    (isFiniteNumber(value.repeatEveryNDays) && value.repeatEveryNDays >= 1)
+    (isFiniteNumber(value.repeatEveryNDays) &&
+      Number.isInteger(value.repeatEveryNDays) &&
+      value.repeatEveryNDays >= 1 &&
+      value.repeatEveryNDays <= 365)
   const endDateIsValid =
     value.repeatEndDate === undefined ||
     value.repeatEndDate === null ||
-    typeof value.repeatEndDate === 'string'
+    isDateString(value.repeatEndDate)
 
   return repeatTypeIsValid && weekDaysAreValid && intervalIsValid && endDateIsValid
 }
 
-function isTask(value: unknown): value is Task {
+export function isTask(value: unknown): value is Task {
   if (!isRecord(value)) return false
 
   return (
     isFiniteNumber(value.id) &&
-    typeof value.title === 'string' &&
-    typeof value.notes === 'string' &&
+    Number.isInteger(value.id) &&
+    value.id >= 0 &&
+    isText(value.title, 200, true) &&
+    isText(value.notes, 1000) &&
     typeof value.completed === 'boolean' &&
     priorities.has(value.priority as Priority) &&
-    typeof value.due === 'string' &&
+    isText(value.due, 100, true) &&
     isFiniteNumber(value.estimatedMinutes) &&
+    Number.isInteger(value.estimatedMinutes) &&
+    value.estimatedMinutes >= 0 &&
+    value.estimatedMinutes <= 999 &&
     isFiniteNumber(value.difficulty) &&
+    Number.isInteger(value.difficulty) &&
+    value.difficulty >= 1 &&
+    value.difficulty <= 5 &&
     categories.has(value.category as Category) &&
     isOptionalRepeatOptions(value)
   )
 }
 
-function isCalendarEvent(value: unknown): value is CalendarEvent {
+export function isCalendarEvent(value: unknown): value is CalendarEvent {
   if (!isRecord(value)) return false
 
   return (
     isFiniteNumber(value.id) &&
-    typeof value.title === 'string' &&
-    typeof value.notes === 'string' &&
-    typeof value.date === 'string' &&
-    typeof value.startHour === 'string' &&
-    typeof value.startMinute === 'string' &&
+    Number.isInteger(value.id) &&
+    value.id >= 0 &&
+    isText(value.title, 200, true) &&
+    isText(value.notes, 500) &&
+    isDateString(value.date) &&
+    isHour(value.startHour) &&
+    isMinute(value.startMinute) &&
     dayPeriods.has(value.startPeriod as DayPeriod) &&
-    typeof value.endHour === 'string' &&
-    typeof value.endMinute === 'string' &&
+    isHour(value.endHour) &&
+    isMinute(value.endMinute) &&
     dayPeriods.has(value.endPeriod as DayPeriod) &&
-    typeof value.location === 'string' &&
+    isText(value.location, 200) &&
     categories.has(value.category as Category) &&
     isOptionalRepeatOptions(value)
   )
@@ -118,6 +153,39 @@ export function saveTasks(tasks: readonly Task[]): boolean {
 
 export function saveEvents(events: readonly CalendarEvent[]): boolean {
   return writeArray(EVENTS_STORAGE_KEY, events)
+}
+
+export function saveBackupData(
+  tasks: readonly Task[],
+  events: readonly CalendarEvent[],
+): boolean {
+  try {
+    if (typeof window === 'undefined') return false
+
+    const previousTasks = window.localStorage.getItem(TASKS_STORAGE_KEY)
+    const previousEvents = window.localStorage.getItem(EVENTS_STORAGE_KEY)
+
+    try {
+      window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks))
+      window.localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(events))
+      return true
+    } catch (error) {
+      if (previousTasks === null) {
+        window.localStorage.removeItem(TASKS_STORAGE_KEY)
+      } else {
+        window.localStorage.setItem(TASKS_STORAGE_KEY, previousTasks)
+      }
+      if (previousEvents === null) {
+        window.localStorage.removeItem(EVENTS_STORAGE_KEY)
+      } else {
+        window.localStorage.setItem(EVENTS_STORAGE_KEY, previousEvents)
+      }
+      throw error
+    }
+  } catch (error) {
+    console.warn('Unable to restore backup data to localStorage.', error)
+    return false
+  }
 }
 
 export function loadTasks(fallback: readonly Task[] = []): Task[] {

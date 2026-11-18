@@ -1,6 +1,6 @@
 # Unburden Persistence Strategy & Offline Options
 
-## Current State: LocalStorage Auto-Save (Phase 1)
+## Current State: LocalStorage Auto-Save and JSON Backup (Phases 1-2)
 
 ### How Persistence Works Today
 
@@ -36,6 +36,42 @@ useEffect(() => {
 Auto-save effects are gated until the initial read completes. This prevents the
 initial empty React state from overwriting stored data during the first render
 (including React Strict Mode development checks).
+
+### JSON Backup and Restore (Phase 2)
+
+The floating **Backup / Restore** button downloads or restores an offline JSON
+backup. Downloads use the name
+`planaware-backup-YYYY-MM-DD.json` and pretty-print the contents for easy
+reading and version control.
+
+The backup format is:
+
+```json
+{
+  "exportDate": "2026-11-10T10:09:00.000Z",
+  "appVersion": "0.0.0",
+  "tasks": [],
+  "events": []
+}
+```
+
+- `exportDate` is an ISO 8601 timestamp.
+- `appVersion` identifies the app version that created the backup.
+- `tasks` and `events` contain the complete `Task` and `CalendarEvent` objects
+  documented in [DATA_MODEL.md](../design/DATA_MODEL.md).
+- JSON escaping preserves quotes, newlines, and other special characters.
+- Empty collections and large collections are supported without a special
+  conversion step.
+
+Before a restore, Unburden validates the JSON syntax, metadata, required
+collections, task/event fields, and duplicate IDs. The restore preview shows
+the task and event counts, export date, and source app version. Restoring uses a
+**replace** strategy: after explicit confirmation, both existing collections
+are replaced and written back to the Phase 1 `localStorage` keys.
+
+Invalid files do not modify current data. If browser storage cannot be written,
+the attempted replacement is rolled back and the app displays an explicit
+warning without changing the current tasks or events.
 
 ### Storage Keys and Location
 
@@ -190,7 +226,7 @@ Power users, large task lists, complex queries needed, single device
 
 ---
 
-### Option 3: **Export/Import JSON Files** ✅ Most User-Friendly
+### Option 3: **Export/Import JSON Files** ✅ Implemented in Phase 2
 **Persistence scope**: User's file system | **Works offline**: Yes | **Complexity**: Low-Medium
 
 #### How it works:
@@ -199,52 +235,11 @@ Power users, large task lists, complex queries needed, single device
 - Users store files locally or in cloud storage (Dropbox, Google Drive, etc.)
 
 #### Implementation:
-```javascript
-// Export
-function downloadData(tasks, events) {
-  const data = { tasks, events, exportDate: new Date().toISOString() }
-  const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `planaware-backup-${new Date().toISOString().split('T')[0]}.json`
-  a.click()
-  
-  URL.revokeObjectURL(url)
-}
 
-// Import
-function handleFileUpload(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const data = JSON.parse(e.target.result)
-        resolve(data)
-      } catch (err) {
-        reject(new Error('Invalid JSON file'))
-      }
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsText(file)
-  })
-}
-
-// Usage
-<input 
-  type="file" 
-  accept=".json" 
-  onChange={(e) => {
-    const file = e.target.files[0]
-    handleFileUpload(file).then(data => {
-      setTasks(data.tasks)
-      setEvents(data.events)
-    })
-  }} 
-/>
-```
+The implementation lives in `src/utils/exportData.ts` and
+`src/utils/importData.ts`. Exports download a formatted blob. Imports read the
+selected file, validate every item with the same guards used for localStorage,
+and return parsed tasks/events for the restore preview.
 
 #### Pros:
 - ✅ User has full control over data
@@ -355,7 +350,7 @@ Production applications, users who need both convenience and control
 
 ### Implementation Priority:
 1. **Phase 1**: Add LocalStorage auto-save (30 min)
-2. **Phase 2**: Add JSON export/import buttons (1 hour)
+2. **Phase 2**: Add validated JSON export/import controls (complete)
 3. **Phase 3**: Replace localStorage with IndexedDB (2-3 hours)
 4. **Phase 4**: Add automatic export scheduling (1-2 hours)
 
@@ -384,7 +379,9 @@ useEffect(() => {
 ```
 
 ### Phase 2: Add Export/Import
-Add UI buttons and handlers for download/upload of JSON files.
+Use the floating backup control to download a backup or choose one to import.
+The preview dialog is the final confirmation boundary before replacing current
+data.
 
 ### Phase 3: Migrate to IndexedDB
 Create `src/utils/storage.js` with IndexedDB functions, replace localStorage calls.

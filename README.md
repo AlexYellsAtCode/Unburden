@@ -15,6 +15,7 @@ The current implementation focuses on planning and workload awareness with:
 - Task sorting (due date, priority, title, estimated time, and more)
 - Optional phone-frame simulation for desktop viewing (demo build)
 - Automatic browser-local persistence for tasks and events
+- Validated JSON backups and restore previews for manual cross-device transfer
 
 ## Current App Behavior
 
@@ -40,10 +41,30 @@ The current implementation focuses on planning and workload awareness with:
 - Delete tasks/events from edit mode with a confirmation modal.
 - Search filters both tasks and events by key fields.
 - Sort menu orders tasks by due date, priority, title, estimated time, and more.
+- The floating down-arrow button opens **Backup / Restore** actions.
 - Swipe gestures:
   - Home: previous/next day
   - Weekly: previous/next week
   - Monthly: previous/next month
+
+## Backup and Restore
+
+### How do I back up my data?
+
+1. Select the floating down-arrow button.
+2. Choose **Download Backup**.
+3. Keep the downloaded `planaware-backup-YYYY-MM-DD.json` file somewhere safe.
+   The backup includes all tasks and events in a human-readable JSON format.
+
+### How do I restore from a backup?
+
+1. Select the floating down-arrow button.
+2. Choose **Import Backup** and select a previously downloaded `.json` file.
+3. Review the task/event counts and backup date.
+4. Choose **Replace and restore** to confirm.
+
+Restoring replaces the current tasks and events after confirmation. A malformed
+or incompatible file is rejected without changing the current data.
 
 ## Tech Stack
 
