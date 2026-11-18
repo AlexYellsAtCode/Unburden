@@ -2352,17 +2352,16 @@ function App() {
 
 
           <nav className="bottom-nav" aria-label="Primary navigation">
-            <button type="button" className={screen === 'home' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('home')}>
+            <button type="button" aria-label="Home" aria-current={screen === 'home' ? 'page' : undefined} className={screen === 'home' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('home')}>
               <span className="nav-button-content">
                 <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <path d="M3 10.5L12 3l9 7.5" />
                   <path d="M5.5 9.5V20h13V9.5" />
                   <path d="M10 20v-6h4v6" />
                 </svg>
-                <span>Home</span>
               </span>
             </button>
-            <button type="button" className={screen === 'weekly' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('weekly')}>
+            <button type="button" aria-label="Weekly View" aria-current={screen === 'weekly' ? 'page' : undefined} className={screen === 'weekly' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('weekly')}>
               <span className="nav-button-content">
                 <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <rect x="3" y="5" width="18" height="16" rx="3" ry="3" />
@@ -2372,10 +2371,9 @@ function App() {
                   <path d="M7 13h10" />
                   <path d="M7 17h6" />
                 </svg>
-                <span>Weekly View</span>
               </span>
             </button>
-            <button type="button" className={screen === 'monthly' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('monthly')}>
+            <button type="button" aria-label="Monthly View" aria-current={screen === 'monthly' ? 'page' : undefined} className={screen === 'monthly' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('monthly')}>
               <span className="nav-button-content">
                 <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <rect x="3" y="5" width="18" height="16" rx="3" ry="3" />
@@ -2389,12 +2387,12 @@ function App() {
                   <path d="M12 17h2" />
                   <path d="M16 17h2" />
                 </svg>
-                <span>Monthly View</span>
               </span>
             </button>
             <button
               type="button"
               className="nav-button"
+              aria-label="Settings"
               aria-haspopup="dialog"
               aria-expanded={settingsOpen}
               onClick={() => setSettingsOpen(true)}
@@ -2404,7 +2402,6 @@ function App() {
                   <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
                   <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.9 1.9-.06-.06A1.7 1.7 0 0 0 16 18.45a1.7 1.7 0 0 0-1.03 1.55v.1h-2.7V20A1.7 1.7 0 0 0 11.25 18.45a1.7 1.7 0 0 0-1.88.34l-.07.06-1.9-1.9.06-.06A1.7 1.7 0 0 0 7.8 15a1.7 1.7 0 0 0-1.55-1.03h-.1v-2.7h.1A1.7 1.7 0 0 0 7.8 10.25a1.7 1.7 0 0 0-.34-1.88l-.06-.07 1.9-1.9.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 12.27 5.25v-.1h2.7v.1A1.7 1.7 0 0 0 16 6.8a1.7 1.7 0 0 0 1.88-.34l.06-.06 1.9 1.9-.06.07A1.7 1.7 0 0 0 19.4 10.25a1.7 1.7 0 0 0 1.55 1.03h.1v2.7h-.1A1.7 1.7 0 0 0 19.4 15Z" />
                 </svg>
-                <span>Settings</span>
               </span>
             </button>
           </nav>

@@ -2025,28 +2025,20 @@ textarea:focus-visible,
 }
 
 .nav-button-content {
-  display: inline-flex;
-  flex-direction: column;
+  display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
   line-height: 1;
 }
 
 .nav-icon {
-  width: 18px;
-  height: 18px;
+  width: 26px;
+  height: 26px;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.nav-button-content > span {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 @media (max-width: 480px) {
@@ -2091,6 +2083,11 @@ textarea:focus-visible,
     left: 12px;
     right: 12px;
     gap: 5px;
+  }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
   }
 }
 
