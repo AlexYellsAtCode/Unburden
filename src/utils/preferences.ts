@@ -19,7 +19,7 @@ export interface AppearancePreferences {
 }
 
 export const DEFAULT_PREFERENCES: AppearancePreferences = {
-  mode: 'light',
+  mode: 'system',
   colorSet: 'neutral',
   textSize: 'medium',
 }

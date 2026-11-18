@@ -13,15 +13,15 @@ interface SettingsMenuProps {
 }
 
 const modeOptions: { value: AppearanceMode; label: string; detail: string }[] = [
+  { value: 'system', label: 'System', detail: 'Follow your device' },
   { value: 'light', label: 'Light', detail: 'Bright and clear' },
   { value: 'dark', label: 'Dark', detail: 'Easy on the eyes' },
-  { value: 'system', label: 'System', detail: 'Follow your device' },
 ]
 
 const colorOptions: { value: ColorSet; label: string; detail: string }[] = [
   { value: 'neutral', label: 'Neutral', detail: 'Classic blue-gray' },
   { value: 'forest', label: 'Forest', detail: 'Green and fresh' },
-  { value: 'orange', label: 'Orange', detail: 'Warm and bold' },
+  { value: 'orange', label: 'Sunset', detail: 'Warm and bold' },
   { value: 'ocean', label: 'Ocean', detail: 'Cool and focused' },
   { value: 'violet', label: 'Violet', detail: 'Calm and creative' },
   { value: 'rose', label: 'Rose', detail: 'Soft and energetic' },
@@ -117,9 +117,9 @@ export function SettingsMenu({ preferences, onChange, onClose }: SettingsMenuPro
         </div>
 
         <fieldset className="settings-fieldset">
-          <legend>Appearance</legend>
+          <legend>Light/Dark Mode</legend>
           <p className="settings-help">Choose a light or dark appearance, or follow your device.</p>
-          <div className="mode-options" aria-label="Appearance mode">
+          <div className="mode-options" aria-label="Light/dark mode">
             {modeOptions.map((option) => (
               <label key={option.value} className={`mode-option mode-${option.value}`}>
                 <input
@@ -139,8 +139,8 @@ export function SettingsMenu({ preferences, onChange, onClose }: SettingsMenuPro
         </fieldset>
 
         <fieldset className="settings-fieldset">
-          <legend>Color set</legend>
-          <p className="settings-help">Each color set supports both light and dark appearances.</p>
+          <legend>Palette</legend>
+          <p className="settings-help">Each palette supports both light and dark modes.</p>
           <div className="theme-options color-options">
             {colorOptions.map((option) => (
               <label key={option.value} className={`theme-option theme-${option.value}`}>

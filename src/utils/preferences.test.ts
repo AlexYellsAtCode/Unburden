@@ -14,6 +14,10 @@ afterEach(() => {
 })
 
 describe('appearance preferences', () => {
+  it('follows the system by default', () => {
+    expect(DEFAULT_PREFERENCES.mode).toBe('system')
+  })
+
   it('loads valid saved preferences and rejects invalid values', () => {
     const getItem = vi.fn()
       .mockReturnValueOnce(JSON.stringify({ mode: 'system', colorSet: 'violet', textSize: 'large' }))
