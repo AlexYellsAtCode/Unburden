@@ -193,7 +193,26 @@ This document describes Unburden's features and their use cases, organized by vi
 - Capacity percentage/color
 - Visual heatmap
 
-### 4. Recurring Items
+### 4. Appearance Settings
+
+#### Customize Theme and Text Size
+**Use Case**: User wants PlanAware to match their environment and preferred reading size
+
+**Steps**:
+1. User selects **Settings** from the bottom navigation
+2. Chooses a built-in theme: Light, Dark, System, Forest, Orange, Ocean, Violet, Rose, Warm sand, or High contrast
+3. Chooses Small, Medium, or Large text
+4. Reviews the live preview and closes the dialog
+
+**Behavior**:
+- Light theme and Medium text are the defaults
+- Forest, Orange and black, Ocean, Violet, Rose, Warm sand, and High contrast provide distinct full-app palettes
+- Changes apply immediately and are stored in local storage
+- System theme follows the operating system and updates when its preference changes
+- Saved settings are restored when PlanAware is reopened
+- The settings dialog supports keyboard navigation, focus trapping, and Escape to close
+
+### 5. Recurring Items
 
 #### Set Daily Recurrence
 **Use Case**: Task or event repeats every single day

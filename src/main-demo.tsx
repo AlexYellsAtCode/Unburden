@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import { PhoneFrameWrapper } from './components/PhoneFrameWrapper'
 import { isMobileEnvironment } from './utils/deviceDetection'
+import { applyPreferences, loadPreferences } from './utils/preferences'
 import './styles.css'
 
 function AppWithPhoneFrame() {
@@ -23,6 +24,8 @@ function AppWithPhoneFrame() {
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Root element was not found')
+
+applyPreferences(loadPreferences())
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>

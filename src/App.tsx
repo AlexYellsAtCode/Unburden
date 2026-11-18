@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import type { ChangeEvent, FormEvent, TouchEvent } from 'react'
+import { SettingsMenu } from './components/SettingsMenu'
 import { seedTasks as importedSeedTasks, seedEvents as importedSeedEvents } from './seedData'
 import { exportToJSON } from './utils/exportData'
 import { importFromJSON } from './utils/importData'
 import type { BackupData } from './utils/exportData'
 import { loadEvents, loadTasks, saveBackupData, saveEvents, saveTasks } from './utils/localStorage'
+import { applyPreferences, loadPreferences, savePreferences } from './utils/preferences'
 import type {
   CalendarEvent,
   Category,
@@ -652,6 +654,8 @@ function App() {
   const [backupMenuOpen, setBackupMenuOpen] = useState(false)
   const [pendingImport, setPendingImport] = useState<BackupData | null>(null)
   const [backupNotice, setBackupNotice] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [preferences, setPreferences] = useState(loadPreferences)
   const [taskSortOption, setTaskSortOption] = useState<TaskSortOption>('due-asc')
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [touchStartY, setTouchStartY] = useState<number | null>(null)
@@ -666,6 +670,22 @@ function App() {
     setEvents(loadEvents(seedEvents))
     setLoading(false)
   }, [])
+
+  useEffect(() => {
+    applyPreferences(preferences)
+    savePreferences(preferences)
+  }, [preferences])
+
+  useEffect(() => {
+    if (preferences.theme !== 'system' || typeof window.matchMedia !== 'function') return
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleSystemThemeChange = () => applyPreferences(preferences)
+    mediaQuery.addEventListener('change', handleSystemThemeChange)
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange)
+  }, [preferences])
+
+  const closeSettings = useCallback(() => setSettingsOpen(false), [])
 
   useEffect(() => {
     if (!loading) saveTasks(tasks)
@@ -2322,6 +2342,14 @@ function App() {
             </div>
           ) : null}
 
+          {settingsOpen ? (
+            <SettingsMenu
+              preferences={preferences}
+              onChange={setPreferences}
+              onClose={closeSettings}
+            />
+          ) : null}
+
 
           <nav className="bottom-nav" aria-label="Primary navigation">
             <button type="button" className={screen === 'home' ? 'nav-button active' : 'nav-button'} onClick={() => setScreen('home')}>
@@ -2362,6 +2390,21 @@ function App() {
                   <path d="M16 17h2" />
                 </svg>
                 <span>Monthly View</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              className="nav-button"
+              aria-haspopup="dialog"
+              aria-expanded={settingsOpen}
+              onClick={() => setSettingsOpen(true)}
+            >
+              <span className="nav-button-content">
+                <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.9 1.9-.06-.06A1.7 1.7 0 0 0 16 18.45a1.7 1.7 0 0 0-1.03 1.55v.1h-2.7V20A1.7 1.7 0 0 0 11.25 18.45a1.7 1.7 0 0 0-1.88.34l-.07.06-1.9-1.9.06-.06A1.7 1.7 0 0 0 7.8 15a1.7 1.7 0 0 0-1.55-1.03h-.1v-2.7h.1A1.7 1.7 0 0 0 7.8 10.25a1.7 1.7 0 0 0-.34-1.88l-.06-.07 1.9-1.9.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 12.27 5.25v-.1h2.7v.1A1.7 1.7 0 0 0 16 6.8a1.7 1.7 0 0 0 1.88-.34l.06-.06 1.9 1.9-.06.07A1.7 1.7 0 0 0 19.4 10.25a1.7 1.7 0 0 0 1.55 1.03h.1v2.7h-.1A1.7 1.7 0 0 0 19.4 15Z" />
+                </svg>
+                <span>Settings</span>
               </span>
             </button>
           </nav>
