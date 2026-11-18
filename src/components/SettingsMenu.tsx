@@ -1,5 +1,10 @@
 import { useEffect, useRef } from 'react'
-import type { AppearancePreferences, TextSizePreference, ThemePreference } from '../utils/preferences'
+import type {
+  AppearanceMode,
+  AppearancePreferences,
+  ColorSet,
+  TextSizePreference,
+} from '../utils/preferences'
 
 interface SettingsMenuProps {
   preferences: AppearancePreferences
@@ -7,12 +12,16 @@ interface SettingsMenuProps {
   onClose: () => void
 }
 
-const themeOptions: { value: ThemePreference; label: string; detail: string }[] = [
+const modeOptions: { value: AppearanceMode; label: string; detail: string }[] = [
   { value: 'light', label: 'Light', detail: 'Bright and clear' },
   { value: 'dark', label: 'Dark', detail: 'Easy on the eyes' },
   { value: 'system', label: 'System', detail: 'Follow your device' },
-  { value: 'forest', label: 'Forest', detail: 'Fresh and grounded' },
-  { value: 'orange-black', label: 'Orange', detail: 'Bold orange and black' },
+]
+
+const colorOptions: { value: ColorSet; label: string; detail: string }[] = [
+  { value: 'neutral', label: 'Neutral', detail: 'Classic blue-gray' },
+  { value: 'forest', label: 'Forest', detail: 'Green and fresh' },
+  { value: 'orange', label: 'Orange', detail: 'Warm and bold' },
   { value: 'ocean', label: 'Ocean', detail: 'Cool and focused' },
   { value: 'violet', label: 'Violet', detail: 'Calm and creative' },
   { value: 'rose', label: 'Rose', detail: 'Soft and energetic' },
@@ -68,8 +77,12 @@ export function SettingsMenu({ preferences, onChange, onClose }: SettingsMenuPro
     }
   }, [onClose])
 
-  function selectTheme(theme: ThemePreference) {
-    onChange({ ...preferences, theme })
+  function selectMode(mode: AppearanceMode) {
+    onChange({ ...preferences, mode })
+  }
+
+  function selectColorSet(colorSet: ColorSet) {
+    onChange({ ...preferences, colorSet })
   }
 
   function selectTextSize(textSize: TextSizePreference) {
@@ -89,7 +102,7 @@ export function SettingsMenu({ preferences, onChange, onClose }: SettingsMenuPro
       >
         <div className="settings-header">
           <div>
-            <p className="eyebrow">Personalize PlanAware</p>
+            <p className="eyebrow">Personalize Unburden</p>
             <h2 id="settings-title">Settings</h2>
           </div>
           <button
@@ -104,17 +117,39 @@ export function SettingsMenu({ preferences, onChange, onClose }: SettingsMenuPro
         </div>
 
         <fieldset className="settings-fieldset">
-          <legend>Color theme</legend>
-          <p className="settings-help">Choose how PlanAware looks on this device.</p>
-          <div className="theme-options">
-            {themeOptions.map((option) => (
+          <legend>Appearance</legend>
+          <p className="settings-help">Choose a light or dark appearance, or follow your device.</p>
+          <div className="mode-options" aria-label="Appearance mode">
+            {modeOptions.map((option) => (
+              <label key={option.value} className={`mode-option mode-${option.value}`}>
+                <input
+                  type="radio"
+                  name="appearance-mode"
+                  value={option.value}
+                  checked={preferences.mode === option.value}
+                  onChange={() => selectMode(option.value)}
+                />
+                <span className="theme-option-copy">
+                  <strong>{option.label}</strong>
+                  <small>{option.detail}</small>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="settings-fieldset">
+          <legend>Color set</legend>
+          <p className="settings-help">Each color set supports both light and dark appearances.</p>
+          <div className="theme-options color-options">
+            {colorOptions.map((option) => (
               <label key={option.value} className={`theme-option theme-${option.value}`}>
                 <input
                   type="radio"
-                  name="theme"
+                  name="color-set"
                   value={option.value}
-                  checked={preferences.theme === option.value}
-                  onChange={() => selectTheme(option.value)}
+                  checked={preferences.colorSet === option.value}
+                  onChange={() => selectColorSet(option.value)}
                 />
                 <span className="theme-swatch" aria-hidden="true">
                   <span />

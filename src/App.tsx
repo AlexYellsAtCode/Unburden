@@ -677,7 +677,7 @@ function App() {
   }, [preferences])
 
   useEffect(() => {
-    if (preferences.theme !== 'system' || typeof window.matchMedia !== 'function') return
+    if (preferences.mode !== 'system' || typeof window.matchMedia !== 'function') return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleSystemThemeChange = () => applyPreferences(preferences)

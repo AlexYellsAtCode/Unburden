@@ -16,12 +16,12 @@ afterEach(() => {
 describe('appearance preferences', () => {
   it('loads valid saved preferences and rejects invalid values', () => {
     const getItem = vi.fn()
-      .mockReturnValueOnce(JSON.stringify({ theme: 'system', textSize: 'large' }))
+      .mockReturnValueOnce(JSON.stringify({ mode: 'system', colorSet: 'violet', textSize: 'large' }))
       .mockReturnValueOnce(JSON.stringify({ theme: 'sepia', textSize: 'huge' }))
     vi.stubGlobal('window', { localStorage: { getItem } })
     vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
-    expect(loadPreferences()).toEqual({ theme: 'system', textSize: 'large' })
+    expect(loadPreferences()).toEqual({ mode: 'system', colorSet: 'violet', textSize: 'large' })
     expect(loadPreferences()).toEqual(DEFAULT_PREFERENCES)
   })
 
@@ -41,10 +41,10 @@ describe('appearance preferences', () => {
   it('persists preferences and reports storage failures', () => {
     const setItem = vi.fn()
     vi.stubGlobal('window', { localStorage: { setItem } })
-    expect(savePreferences({ theme: 'dark', textSize: 'small' })).toBe(true)
+    expect(savePreferences({ mode: 'dark', colorSet: 'forest', textSize: 'small' })).toBe(true)
     expect(setItem).toHaveBeenCalledWith(
       PREFERENCES_STORAGE_KEY,
-      JSON.stringify({ theme: 'dark', textSize: 'small' }),
+      JSON.stringify({ mode: 'dark', colorSet: 'forest', textSize: 'small' }),
     )
 
     setItem.mockImplementationOnce(() => {
@@ -62,10 +62,20 @@ describe('appearance preferences', () => {
   })
 
   it('validates only the supported options', () => {
-    expect(isAppearancePreferences({ theme: 'light', textSize: 'medium' })).toBe(true)
-    expect(isAppearancePreferences({ theme: 'forest', textSize: 'medium' })).toBe(true)
-    expect(isAppearancePreferences({ theme: 'orange-black', textSize: 'large' })).toBe(true)
-    expect(isAppearancePreferences({ theme: 'dark' })).toBe(false)
-    expect(isAppearancePreferences({ theme: 'sepia', textSize: 'medium' })).toBe(false)
+    expect(isAppearancePreferences({ mode: 'light', colorSet: 'neutral', textSize: 'medium' })).toBe(true)
+    expect(isAppearancePreferences({ mode: 'dark', colorSet: 'forest', textSize: 'medium' })).toBe(true)
+    expect(isAppearancePreferences({ mode: 'system', colorSet: 'orange', textSize: 'large' })).toBe(true)
+    expect(isAppearancePreferences({ mode: 'dark', textSize: 'medium' })).toBe(false)
+    expect(isAppearancePreferences({ mode: 'light', colorSet: 'sepia', textSize: 'medium' })).toBe(false)
+  })
+
+  it('migrates the original combined theme values', () => {
+    const getItem = vi.fn()
+      .mockReturnValueOnce(JSON.stringify({ theme: 'system', textSize: 'large' }))
+      .mockReturnValueOnce(JSON.stringify({ theme: 'orange-black', textSize: 'small' }))
+    vi.stubGlobal('window', { localStorage: { getItem } })
+
+    expect(loadPreferences()).toEqual({ mode: 'system', colorSet: 'neutral', textSize: 'large' })
+    expect(loadPreferences()).toEqual({ mode: 'dark', colorSet: 'orange', textSize: 'small' })
   })
 })
