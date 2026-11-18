@@ -26,6 +26,9 @@ const colorOptions: { value: ColorSet; label: string; detail: string }[] = [
   { value: 'violet', label: 'Violet', detail: 'Calm and creative' },
   { value: 'rose', label: 'Rose', detail: 'Soft and energetic' },
   { value: 'sand', label: 'Warm sand', detail: 'Warm and relaxed' },
+  { value: 'coffee', label: 'Coffee', detail: 'Rich and comforting' },
+  { value: 'monochrome', label: 'Monochrome', detail: 'Clean and understated' },
+  { value: 'slate', label: 'Slate', detail: 'Cool and composed' },
   { value: 'contrast', label: 'High contrast', detail: 'Maximum clarity' },
 ]
 

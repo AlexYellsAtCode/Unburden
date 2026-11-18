@@ -9,6 +9,9 @@ export type ColorSet =
   | 'violet'
   | 'rose'
   | 'sand'
+  | 'coffee'
+  | 'monochrome'
+  | 'slate'
   | 'contrast'
 export type TextSizePreference = 'small' | 'medium' | 'large'
 
@@ -33,6 +36,9 @@ const colorSets = new Set<ColorSet>([
   'violet',
   'rose',
   'sand',
+  'coffee',
+  'monochrome',
+  'slate',
   'contrast',
 ])
 const textSizes = new Set<TextSizePreference>(['small', 'medium', 'large'])
