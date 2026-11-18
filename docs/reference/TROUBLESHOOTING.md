@@ -65,7 +65,7 @@
 **Symptoms**: Created tasks or events don't show in any view
 
 **Potential Causes**:
-1. **Data not loaded**: Check browser console for errors in `fakeBackend.listTasks()` or `fakeBackend.listEvents()`
+1. **Data not loaded**: Check DevTools → Application → Local Storage for `planaware_tasks` and `planaware_events`
 2. **State not updating**: Verify `setTasks()` or `setEvents()` is called after creating items
 3. **Filter active**: Search query might be filtering results; clear search box
 4. **Date mismatch**: Task/event date might be in the past or formatted incorrectly
@@ -102,11 +102,11 @@
 
 **Symptoms**: Tasks still appear after page reload (or don't appear, depending on expectation)
 
-**Note**: This is expected behavior in v0.1. Data is stored in memory only and resets on refresh.
+**Note**: Persistence is expected. Tasks and events are loaded from
+`planaware_tasks` and `planaware_events` in localStorage.
 
-**If unintended persistence**: 
-- Check if localStorage is being used (`localStorage.getItem()` calls in code)
-- Clear browser storage: DevTools → Application → Storage → Clear Site Data
+If persistence is unintended, remove only those two keys in DevTools → Application
+→ Local Storage and refresh. To reset all site data, use Clear Site Data.
 
 #### Swipe Gestures Not Working
 
@@ -268,11 +268,15 @@
 
 **Symptoms**: Added tasks/events disappear after page reload
 
-**Expected Behavior**: This is normal in v0.1 (data stored in memory only)
+**Expected Behavior**: Saved data should survive refreshes in the same browser
+profile and origin.
 
 **Solutions**:
-1. Implement localStorage persistence (see [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md))
-2. Or implement backend database integration
+1. Confirm the URL, port, and browser profile are unchanged
+2. Check that `planaware_tasks` and `planaware_events` exist in DevTools
+3. Check the console for malformed-data or blocked-storage warnings
+4. Note that private/incognito data is temporary and may be removed when that session closes
+5. Confirm browser/site settings allow local storage
 
 #### Duplicate Tasks/Events
 

@@ -14,7 +14,7 @@ The current implementation focuses on planning and workload awareness with:
 - Color- and shape-coded categories (Work, Personal, Health, Learning)
 - Task sorting (due date, priority, title, estimated time, and more)
 - Optional phone-frame simulation for desktop viewing (demo build)
-- Local fake API behavior (simulated latency, in-memory CRUD)
+- Automatic browser-local persistence for tasks and events
 
 ## Current App Behavior
 
@@ -52,7 +52,7 @@ The current implementation focuses on planning and workload awareness with:
 - Vite 8
 - Plain CSS (single stylesheet)
 - No external state manager
-- No real backend (simulated in `src/App.tsx`)
+- No backend server; data is persisted with browser `localStorage`
 
 ## Getting Started
 
@@ -87,8 +87,8 @@ The current implementation focuses on planning and workload awareness with:
 
 Unburden ships two entry points:
 
-- **Default** (`npm run dev`): Serves `index.html` / `src/main.tsx`. Starts with an empty task and event list and no phone frame.
-- **Demo** (`npm run dev:demo`): Serves `index-demo.html` / `src/main-demo.tsx` at the root URL. Wraps the app in a phone frame with a status bar and loads sample seed data (`VITE_USE_SEED_DATA=true`).
+- **Default** (`npm run dev`): Serves `index.html` / `src/main.tsx`. Loads saved browser data, or starts with empty lists on first use, without a phone frame.
+- **Demo** (`npm run dev:demo`): Serves `index-demo.html` / `src/main-demo.tsx` at the root URL. Wraps the app in a phone frame with a status bar and loads sample seed data when no valid saved data exists (`VITE_USE_SEED_DATA=true`).
 
 The phone frame is hidden automatically on mobile devices, installed PWAs, and viewports narrower than 768px. Override with `VITE_MOBILE_MODE=true|false` (see `.env.test`).
 

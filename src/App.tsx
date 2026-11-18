@@ -1,21 +1,18 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import type { FormEvent, TouchEvent } from 'react'
 import { seedTasks as importedSeedTasks, seedEvents as importedSeedEvents } from './seedData'
+import { loadEvents, loadTasks, saveEvents, saveTasks } from './utils/localStorage'
 import type {
   CalendarEvent,
   Category,
   DayPeriod,
   EventForm,
-  EventInput,
-  EventUpdates,
   RepeatOptions,
   RepeatType,
   Screen,
   Task,
   TaskForm,
-  TaskInput,
   TaskSortOption,
-  TaskUpdates,
 } from './types'
 
 function shortPriority(priority: string) {
@@ -49,71 +46,6 @@ function parseDayPeriod(value: string): DayPeriod {
 const shouldUseSeedData = import.meta.env.VITE_USE_SEED_DATA === 'true'
 const seedTasks: Task[] = shouldUseSeedData ? importedSeedTasks : []
 const seedEvents: CalendarEvent[] = shouldUseSeedData ? importedSeedEvents : []
-
-function clone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T
-}
-
-let fakeTasks: Task[] = clone(seedTasks)
-let fakeEvents: CalendarEvent[] = clone(seedEvents)
-
-const fakeBackend = {
-  async listTasks(): Promise<Task[]> {
-    await wait(650)
-    return clone(fakeTasks)
-  },
-  async addTask(task: TaskInput): Promise<Task> {
-    await wait(500)
-    const nextTask = { ...task, id: Date.now(), completed: false }
-    fakeTasks = [nextTask, ...fakeTasks]
-    return clone(nextTask)
-  },
-  async toggleTask(id: number): Promise<Task> {
-    await wait(300)
-    fakeTasks = fakeTasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task))
-    const updatedTask = fakeTasks.find((task) => task.id === id)
-    if (!updatedTask) throw new Error(`Task with id ${id} was not found`)
-    return clone(updatedTask)
-  },
-  async updateTask(id: number, updates: TaskUpdates): Promise<Task> {
-    await wait(450)
-    fakeTasks = fakeTasks.map((task) => (task.id === id ? { ...task, ...updates } : task))
-    const updatedTask = fakeTasks.find((task) => task.id === id)
-    if (!updatedTask) throw new Error(`Task with id ${id} was not found`)
-    return clone(updatedTask)
-  },
-  async deleteTask(id: number): Promise<number> {
-    await wait (400)
-    fakeTasks = fakeTasks.filter((task) => task.id !== id)
-    return id
-  },
-  async listEvents(): Promise<CalendarEvent[]> {
-    await wait(500)
-    return clone(fakeEvents)
-  },
-  async addEvent(event: EventInput): Promise<CalendarEvent> {
-    await wait(450)
-    const nextEvent = { ...event, id: Date.now() }
-    fakeEvents = [nextEvent, ...fakeEvents]
-    return clone(nextEvent)
-  },
-  async updateEvent(id: number, updates: EventUpdates): Promise<CalendarEvent> {
-    await wait(450)
-    fakeEvents = fakeEvents.map((event) => (event.id === id ? { ...event, ...updates } : event))
-    const updatedEvent = fakeEvents.find((event) => event.id === id)
-    if (!updatedEvent) throw new Error(`Event with id ${id} was not found`)
-    return clone(updatedEvent)
-  },
-  async deleteEvent(id: number): Promise<number> {
-    await wait(400)
-    fakeEvents = fakeEvents.filter((event) => event.id !== id)
-    return id
-  }
-}
-
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
 
 const DAILY_CAPACITY_MINUTES = (24 - 8 - 3) * 60
 
@@ -723,18 +655,18 @@ function App() {
   const sortMenuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    let active = true
-    Promise.all([fakeBackend.listTasks(), fakeBackend.listEvents()]).then(([taskItems, eventItems]) => {
-      if (active) {
-        setTasks(taskItems)
-        setEvents(eventItems)
-        setLoading(false)
-      }
-    })
-    return () => {
-      active = false
-    }
+    setTasks(loadTasks(seedTasks))
+    setEvents(loadEvents(seedEvents))
+    setLoading(false)
   }, [])
+
+  useEffect(() => {
+    if (!loading) saveTasks(tasks)
+  }, [tasks, loading])
+
+  useEffect(() => {
+    if (!loading) saveEvents(events)
+  }, [events, loading])
 
   useEffect(() => {
     if (!sortMenuOpen) return
@@ -1223,7 +1155,7 @@ function App() {
     setDeleteConfirmOpen(false)
   }
 
-  async function handleSaveTask(event: FormEvent<HTMLFormElement>) {
+  function handleSaveTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!form.title.trim()) return
     setSyncing(true)
@@ -1247,10 +1179,11 @@ function App() {
     }
 
     if (editingTaskId !== null) {
-      const updated = await fakeBackend.updateTask(editingTaskId, payload)
-      setTasks((current) => current.map((task) => (task.id === editingTaskId ? updated : task)))
+      setTasks((current) =>
+        current.map((task) => (task.id === editingTaskId ? { ...task, ...payload } : task)),
+      )
     } else {
-      const added = await fakeBackend.addTask(payload)
+      const added: Task = { ...payload, id: Date.now(), completed: false }
       setTasks((current) => [added, ...current])
     }
 
@@ -1259,12 +1192,10 @@ function App() {
     closeComposer()
   }
 
-  async function handleConfirmDeleteTask(){
+  function handleConfirmDeleteTask(){
     if (editingTaskId === null) return
 
     setSyncing(true)
-
-    await fakeBackend.deleteTask(editingTaskId)
 
     setTasks((current) =>
       current.filter((task) => task.id !== editingTaskId)
@@ -1276,7 +1207,7 @@ function App() {
     closeComposer()
   }
 
-  async function handleSaveEvent(event: FormEvent<HTMLFormElement>) {
+  function handleSaveEvent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!eventForm.title.trim()) return
 
@@ -1300,10 +1231,13 @@ function App() {
     }
 
     if (editingEventId !== null) {
-      const updated = await fakeBackend.updateEvent(editingEventId, payload)
-      setEvents((current) => current.map((eventItem) => (eventItem.id === editingEventId ? updated : eventItem)))
+      setEvents((current) =>
+        current.map((eventItem) =>
+          eventItem.id === editingEventId ? { ...eventItem, ...payload } : eventItem,
+        ),
+      )
     } else {
-      const added = await fakeBackend.addEvent(payload)
+      const added: CalendarEvent = { ...payload, id: Date.now() }
       setEvents((current) => [added, ...current])
     }
 
@@ -1312,12 +1246,10 @@ function App() {
     closeComposer()
   }
 
-  async function handleConfirmDeleteEvent(){
+  function handleConfirmDeleteEvent(){
     if (editingEventId === null) return
 
     setSyncing(true)
-
-    await fakeBackend.deleteEvent(editingEventId)
 
     setEvents((current) =>
       current.filter((event) => event.id !== editingEventId)
@@ -1329,9 +1261,8 @@ function App() {
     closeComposer()
   }
 
-  async function handleToggleTask(id: number) {
+  function handleToggleTask(id: number) {
     setSyncing(true)
-    await fakeBackend.toggleTask(id)
     setTasks((current) => current.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
     setSyncing(false)
   }
