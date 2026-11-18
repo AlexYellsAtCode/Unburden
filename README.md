@@ -58,7 +58,7 @@ The current implementation focuses on planning and workload awareness with:
 
 ### Requirements
 
-- Node.js 18+
+- Node.js 20.19+ or 22.12+
 - npm
 
 ### Install and Run
@@ -100,9 +100,17 @@ See [docs/demo/DEMO_MODE.md](./docs/demo/DEMO_MODE.md) for more details about us
 - `npm run dev:demo` - Start dev server with phone frame and sample seed data
 - `npm run build` - Build production assets (main and demo entry pages, empty data)
 - `npm run build:demo` - Build production assets with sample seed data baked in
+- `npm test` - Run the automated unit test suite
 - `npm run typecheck` - Run strict TypeScript checks without emitting files
 - `npm run preview` - Preview production build locally
 - `npm run deploy` - Build and publish `dist` to the `gh-pages` branch
+
+## Continuous Integration
+
+GitHub Actions runs dependency installation, the automated test suite,
+TypeScript type-checking, and both production builds on every push and pull
+request. The CodeQL security analysis workflow is available from the
+**Actions** tab and runs manually.
 
 ## Deploying to GitHub Pages
 
