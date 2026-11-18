@@ -100,7 +100,7 @@ Root/
 
 #### Type Checking
 
-Run `npm run typecheck` after changing application code. TypeScript configuration is in `tsconfig.json`; shared task, event, recurrence, and form contracts are in `src/types.ts`. Keep those contracts aligned with data returned by the simulated backend and seed data.
+Run `npm run typecheck` after changing application code. TypeScript configuration is in `tsconfig.json`; shared task, event, recurrence, and form contracts are in `src/types.ts`. Keep those contracts aligned with stored data and seed data.
 
 #### 1. State Management in App.tsx
 
@@ -116,24 +116,16 @@ const [showAddMenu, setShowAddMenu] = useState(false)
 const [searchQuery, setSearchQuery] = useState('')
 ```
 
-#### 2. Fake Backend
+#### 2. Persistence
 
-All API calls are simulated with artificial delays. To modify behavior:
+Task and event changes update React state directly. `src/App.tsx` then uses
+`saveTasks()` and `saveEvents()` from `src/utils/localStorage.ts` to persist each
+collection. The utility validates saved JSON before returning it to the app and
+falls back safely if storage is unavailable.
 
-```javascript
-const fakeBackend = {
-  async listTasks() {
-    await wait(650)  // Adjust latency here
-    return clone(fakeTasks)
-  },
-  // ... other methods
-}
-```
-
-To add a new backend function:
-1. Add the method to `fakeBackend`
-2. Call it with `await fakeBackend.methodName()`
-3. Update `fakeTasks` or `fakeEvents` accordingly
+Storage keys are `planaware_tasks` and `planaware_events`. Use the utility
+functions rather than accessing `localStorage` directly so validation and error
+handling remain consistent.
 
 #### 3. Working with Tasks
 
@@ -148,14 +140,17 @@ const newTask = {
   difficulty: 3,
   category: 'work'
 }
-const created = await fakeBackend.addTask(newTask)
-setTasks([...tasks, created])
+const created: Task = { ...newTask, id: Date.now(), completed: false }
+setTasks((current) => [created, ...current])
 ```
 
 Toggling completion:
 ```javascript
-const updated = await fakeBackend.toggleTask(taskId)
-setTasks(tasks.map(t => t.id === taskId ? updated : t))
+setTasks((current) =>
+  current.map((task) =>
+    task.id === taskId ? { ...task, completed: !task.completed } : task,
+  ),
+)
 ```
 
 #### 4. Working with Events
@@ -207,12 +202,12 @@ repeatType: 'monthly'
 4. **Style it**: Add CSS to `styles.css`
 5. **Test it**: Verify in dev server with `npm run dev`
 
-#### Modifying the Fake Backend
+#### Modifying Persisted Data
 
-1. Open `App.tsx` and locate the `fakeBackend` object
-2. Modify the method or add a new one
-3. Update `fakeTasks` or `fakeEvents` accordingly
-4. Call the method from your UI handler
+1. Update the `Task` or `CalendarEvent` contract in `src/types.ts`
+2. Update validators in `src/utils/localStorage.ts`
+3. Update state handlers in `src/App.tsx`
+4. Test both a fresh browser profile and a refresh with existing saved data
 
 #### Working with Dates
 
@@ -308,20 +303,12 @@ This command:
 3. Use CSS variables (defined at the top) for consistency
 4. Changes take effect immediately with hot reload
 
-### Add Persistence (localStorage)
+### Persistence (localStorage)
 
-1. After `setTasks()`, store to localStorage:
-```javascript
-localStorage.setItem('planaware-tasks', JSON.stringify(tasks))
-```
-
-2. On app initialization:
-```javascript
-useEffect(() => {
-  const saved = localStorage.getItem('planaware-tasks')
-  if (saved) setTasks(JSON.parse(saved))
-}, [])
-```
+Persistence is implemented in `src/utils/localStorage.ts` and wired to the task
+and event state in `src/App.tsx`. Extend the utility validators whenever the
+persisted model changes. Do not edit stored JSON keys unless a migration is also
+implemented.
 
 ## Troubleshooting
 

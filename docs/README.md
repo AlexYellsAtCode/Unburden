@@ -69,7 +69,7 @@ Solutions for problems and debugging guidance.
 
 ### Key Facts:
 - **Framework**: React 18 with Vite
-- **Storage**: In-memory (no persistence yet)
+- **Storage**: Browser `localStorage` with schema validation
 - **Views**: Daily (timeline), Weekly (buckets), Monthly (heatmap)
 - **Features**: Create/edit/delete tasks & events, recurring items, capacity visualization
 - **Deployment**: GitHub Pages
@@ -80,7 +80,7 @@ Frontend: React 18
 Build: Vite 8
 Styling: Plain CSS
 State: React hooks (useState, useEffect, useMemo)
-Backend: Simulated (in-memory)
+Backend: None (local-only persistence)
 Hosting: GitHub Pages
 ```
 
@@ -99,7 +99,7 @@ npm run dev
 
 ### Key Facts:
 - **Framework**: React 18 with Vite
-- **Storage**: In-memory (no persistence yet)
+- **Storage**: Browser `localStorage` with schema validation
 - **Views**: Daily (timeline), Weekly (buckets), Monthly (heatmap)
 - **Features**: Create/edit/delete tasks & events, recurring items, capacity visualization
 - **Deployment**: GitHub Pages
@@ -110,7 +110,7 @@ Frontend: React 18
 Build: Vite 8
 Styling: Plain CSS
 State: React hooks (useState, useEffect, useMemo)
-Backend: Simulated (in-memory)
+Backend: None (local-only persistence)
 Hosting: GitHub Pages
 ```
 

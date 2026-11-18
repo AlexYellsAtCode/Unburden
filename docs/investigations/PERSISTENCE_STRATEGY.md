@@ -1,37 +1,69 @@
 # Unburden Persistence Strategy & Offline Options
 
-## Current State: In-Memory Only
+## Current State: LocalStorage Auto-Save (Phase 1)
 
 ### How Persistence Works Today
 
-Unburden currently has **NO persistent storage**. All data is stored in-memory using React state:
+Unburden stores task and event data in React state and automatically persists both
+collections to the browser's `localStorage`.
 
-```javascript
-// App.tsx
-const [tasks, setTasks] = useState([])
-const [events, setEvents] = useState([])
+```typescript
+// src/utils/localStorage.ts
+saveTasks(tasks)
+saveEvents(events)
 
-// Initial load (on mount with empty dependency array)
+// src/App.tsx
 useEffect(() => {
-  Promise.all([fakeBackend.listTasks(), fakeBackend.listEvents()]).then(([taskItems, eventItems]) => {
-    setTasks(taskItems)
-    setEvents(eventItems)
-  })
+  setTasks(loadTasks(seedTasks))
+  setEvents(loadEvents(seedEvents))
+  setLoading(false)
 }, [])
 ```
 
 **Key characteristics:**
-- Data is stored in React component state
-- Data is fetched from `fakeBackend` (in-memory simulation) on app load
-- Optional seed data can be loaded via `VITE_USE_SEED_DATA=true`
-- **All data is lost on page refresh**
-- No network calls or backend server required
+- Tasks are stored under `planaware_tasks`
+- Events are stored under `planaware_events`
+- Each collection is saved after its React state changes
+- Reads happen immediately and do not make a network request
+- Saved JSON is checked for the expected array and item shape before use
+- Missing or invalid values fall back to the configured initial data
+- Demo seed data (`VITE_USE_SEED_DATA=true`) is used only when no valid saved value
+  exists, so opening demo mode does not overwrite an existing local data set
+- A valid saved empty array stays empty; it is not replaced with demo data
+- Storage access failures are reported with `console.warn` and do not prevent
+  the app from continuing in memory
 
-### Limitations
-- ❌ Data doesn't persist across browser sessions
-- ❌ No offline support (though technically it's already offline)
-- ❌ Can't deploy a version where users retain their data
-- ❌ Users must re-enter data every session
+Auto-save effects are gated until the initial read completes. This prevents the
+initial empty React state from overwriting stored data during the first render
+(including React Strict Mode development checks).
+
+### Storage Keys and Location
+
+Data is scoped to the browser profile and origin (protocol, host, and port).
+Normal and demo entry points on the same deployment therefore share the same
+keys:
+
+| Key | Value |
+|-----|-------|
+| `planaware_tasks` | JSON array of `Task` objects |
+| `planaware_events` | JSON array of `CalendarEvent` objects |
+
+In browser DevTools, inspect **Application** (or **Storage**) → **Local
+Storage** → the app origin.
+
+### Troubleshooting
+
+- If data is unexpectedly absent, confirm the current URL and browser profile
+  match the profile where it was saved. A different port is a different origin.
+- To start over, remove only `planaware_tasks` and/or `planaware_events` in
+  DevTools, then refresh. Clearing all site data also removes these values.
+- Invalid JSON or an invalid item shape is ignored and replaced with the initial
+  fallback on the next save. Check the browser console for the storage warning.
+- Private/incognito sessions have separate, temporary storage. Saved data may be
+  removed when the private session closes.
+- If the browser blocks storage or the quota is exceeded, the app continues
+  in-memory for the current session and logs a warning. Free site storage or use
+  a browser profile that permits local storage.
 
 ---
 
@@ -49,17 +81,15 @@ Since you want to keep the system **fully offline** (even when deployed), here a
 - ~5-10MB capacity limit
 
 #### Implementation:
-```javascript
+```typescript
 // Save to localStorage
-localStorage.setItem('tasks', JSON.stringify(tasks))
-localStorage.setItem('events', JSON.stringify(events))
+localStorage.setItem('planaware_tasks', JSON.stringify(tasks))
+localStorage.setItem('planaware_events', JSON.stringify(events))
 
 // Load from localStorage
 useEffect(() => {
-  const savedTasks = localStorage.getItem('tasks')
-  const savedEvents = localStorage.getItem('events')
-  setTasks(savedTasks ? JSON.parse(savedTasks) : [])
-  setEvents(savedEvents ? JSON.parse(savedEvents) : [])
+  setTasks(loadTasks())
+  setEvents(loadEvents())
 }, [])
 ```
 
@@ -334,26 +364,23 @@ Production applications, users who need both convenience and control
 ## Code Implementation Template
 
 ### Phase 1: Add LocalStorage
-```javascript
+```typescript
 // Add after state declarations
 useEffect(() => {
-  // Load from localStorage on mount
-  const savedTasks = JSON.parse(localStorage.getItem('planaware_tasks') || '[]')
-  const savedEvents = JSON.parse(localStorage.getItem('planaware_events') || '[]')
-  setTasks(savedTasks)
-  setEvents(savedEvents)
+  setTasks(loadTasks(seedTasks))
+  setEvents(loadEvents(seedEvents))
   setLoading(false)
 }, [])
 
 // Auto-save tasks
 useEffect(() => {
-  localStorage.setItem('planaware_tasks', JSON.stringify(tasks))
-}, [tasks])
+  if (!loading) saveTasks(tasks)
+}, [tasks, loading])
 
 // Auto-save events
 useEffect(() => {
-  localStorage.setItem('planaware_events', JSON.stringify(events))
-}, [events])
+  if (!loading) saveEvents(events)
+}, [events, loading])
 ```
 
 ### Phase 2: Add Export/Import

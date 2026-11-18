@@ -11,7 +11,7 @@ Unburden is a Vite + React productivity application designed to help users manag
 - **Styling**: Plain CSS (single stylesheet)
 - **State Management**: React hooks (useState, useEffect, useMemo)
 - **Package Manager**: npm
-- **Backend**: Simulated (in-memory, no external API)
+- **Persistence**: Browser `localStorage` (no external API)
 
 ## Project Structure
 
@@ -34,7 +34,7 @@ Unburden/
 Unburden uses React hooks for state management:
 
 - **useState**: Manages tasks, events, UI state (current view, selected date, edit mode)
-- **useEffect**: Handles side effects (fetching data, swipe listeners)
+- **useEffect**: Loads and auto-saves data and manages event listeners
 - **useMemo**: Optimizes expensive calculations (filtering, grouping tasks)
 - **useRef**: Captures touch events for swipe gestures
 
@@ -79,25 +79,17 @@ Unburden uses React hooks for state management:
 }
 ```
 
-### 3. **Fake Backend**
+### 3. **Persistence**
 
-The application simulates a REST API using in-memory storage with artificial delays:
+`src/utils/localStorage.ts` validates and persists tasks and calendar events under:
 
-```javascript
-const fakeBackend = {
-  async listTasks() { ... },
-  async addTask(task) { ... },
-  async updateTask(id, updates) { ... },
-  async deleteTask(id) { ... },
-  async toggleTask(id) { ... },
-  async listEvents() { ... },
-  async addEvent(event) { ... },
-  async updateEvent(id, updates) { ... },
-  async deleteEvent(id) { ... }
-}
+```typescript
+const TASKS_STORAGE_KEY = 'planaware_tasks'
+const EVENTS_STORAGE_KEY = 'planaware_events'
 ```
 
-Delays are configurable in the `wait()` function to simulate network latency.
+State mutations happen synchronously in React. Separate effects save each
+collection after the initial local storage load completes.
 
 ### 4. **Views**
 
@@ -159,8 +151,8 @@ App (root)
 ### Utility Functions
 - `formatWeekDue()`: Formats date/time display for tasks
 - `shortPriority()`: Shortens priority labels for UI
-- `clone()`: Deep clones objects for immutability
-- `wait()`: Simulates API latency
+- `loadTasks()` / `loadEvents()`: Load and validate stored collections
+- `saveTasks()` / `saveEvents()`: Serialize collections to local storage
 
 ### Calculations
 - `calculateCapacity()`: Computes daily workload
@@ -169,12 +161,13 @@ App (root)
 
 ## Data Flow
 
-1. **Initialization**: `useEffect` loads seed data via `fakeBackend.listTasks()` and `fakeBackend.listEvents()`
+1. **Initialization**: `useEffect` loads valid browser data, falling back to demo seeds when configured
 2. **User Action**: User interacts with UI (add, edit, delete, toggle)
 3. **State Update**: `setState` triggers state change
-4. **Re-render**: React re-renders affected components
-5. **Calculations**: `useMemo` recomputes derived data (filtered lists, capacity)
-6. **Display**: UI displays updated state
+4. **Persistence**: Auto-save effects update the corresponding local storage key
+5. **Re-render**: React re-renders affected components
+6. **Calculations**: `useMemo` recomputes derived data (filtered lists, capacity)
+7. **Display**: UI displays updated state
 
 ## Styling Architecture
 
@@ -188,7 +181,7 @@ Single `styles.css` file organized by:
 ## Performance Considerations
 
 - **useMemo**: Prevents unnecessary recalculations of filtered task lists
-- **clone()**: Ensures immutability, avoiding accidental mutations
+- **localStorage validation**: Rejects malformed saved collections before rendering
 - **Lazy rendering**: Only displays visible items in lists
 - **CSS animations**: Hardware-accelerated for smooth transitions
 
@@ -196,9 +189,8 @@ Single `styles.css` file organized by:
 
 - Extract components into separate files
 - Implement context API for theme/user preferences
-- Add TypeScript for type safety
 - Integrate real backend API
 - Implement proper state management (Redux, Zustand, etc.)
-- Add data persistence (localStorage, IndexedDB, server database)
+- Consider IndexedDB for datasets beyond localStorage's practical capacity
 - Implement authentication & user profiles
 

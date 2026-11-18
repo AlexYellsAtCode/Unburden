@@ -31,7 +31,8 @@ npm run deploy     # Build and deploy to GitHub Pages
 
 | File | Purpose |
 |------|---------|
-| `src/App.tsx` | Main component (state, views, fake backend); no phone UI code |
+| `src/App.tsx` | Main component (state, views, persistence integration) |
+| `src/utils/localStorage.ts` | Validated browser persistence for tasks and events |
 | `src/main.tsx` | Main entry point (renders App directly) |
 | `src/main-demo.tsx` | Demo entry point (wraps App with phone frame) |
 | `src/components/PhoneFrameWrapper.tsx` | Phone mockup UI (demo only) |
@@ -107,9 +108,9 @@ const [searchQuery, setSearchQuery] = useState('')    // Current search filter
 ## Adding a Task (Code Example)
 
 ```javascript
-const addTaskHandler = async (taskData) => {
-  const newTask = await fakeBackend.addTask(taskData)
-  setTasks([...tasks, newTask])
+const addTaskHandler = (taskData) => {
+  const newTask = { ...taskData, id: Date.now(), completed: false }
+  setTasks((current) => [newTask, ...current])
 }
 
 // Usage:
@@ -208,8 +209,8 @@ npm --version    # Should be 9+
 
 ## Known Limitations
 
-- ✗ Data resets on page refresh (no persistence)
-- ✗ No backend integration (all data in-memory)
+- ✗ Data is local to the current browser profile and origin
+- ✗ No backend integration or cross-device sync
 - ✗ No authentication (single user, no accounts)
 - ✗ No mobile app (web-based only)
 - ✗ No timezone support (uses browser timezone)
@@ -254,7 +255,7 @@ npm --version    # Should be 9+
 
 ## Tips for Developers
 
-1. **Use `clone()`** to avoid mutations: `clone(task)` instead of `{ ...task }`
+1. **Use state updater functions** to avoid mutations
 2. **Use `useMemo`** for expensive calculations to avoid re-renders
 3. **Use `useRef`** for touch event tracking
 4. **Keep state in App.tsx** for simplicity (no context API yet)
@@ -265,7 +266,8 @@ npm --version    # Should be 9+
 
 ## Future Enhancements
 
-- [ ] Persistent storage (localStorage, backend)
+- [x] Automatic localStorage persistence
+- [ ] Backend persistence and cross-device sync
 - [ ] Real backend API integration
 - [ ] Component extraction and refactoring
 - [ ] TypeScript support
